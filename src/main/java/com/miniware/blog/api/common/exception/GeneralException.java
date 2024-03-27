@@ -1,4 +1,4 @@
-package com.miniware.blog.api.exception;
+package com.miniware.blog.api.common.exception;
 
 import com.miniware.blog.api.common.constant.Code;
 import lombok.Getter;

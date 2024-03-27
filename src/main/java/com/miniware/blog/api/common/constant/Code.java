@@ -1,6 +1,6 @@
 package com.miniware.blog.api.common.constant;
 
-import com.miniware.blog.api.exception.GeneralException;
+import com.miniware.blog.api.common.exception.GeneralException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

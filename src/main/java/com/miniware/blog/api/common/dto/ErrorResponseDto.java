@@ -1,14 +1,26 @@
 package com.miniware.blog.api.common.dto;
 
-import com.miniware.blog.api.common.constant.ResultResponse;
+import com.miniware.blog.api.common.constant.CodeData;
+import lombok.Getter;
 
+@Getter
 public class ErrorResponseDto extends ResponseDto {
 
-    private ErrorResponseDto(ResultResponse resultResponse) {
-        super(false, resultResponse.getCode(), resultResponse.getMessage());
+    private String exMessage;
+
+    private ErrorResponseDto(CodeData codeData) {
+        super(false, codeData.getCode(), codeData.getMessage());
+    }
+    private ErrorResponseDto(CodeData codeData, RuntimeException ex) {
+        super(false, codeData.getCode(), codeData.getMessage());
+        this.exMessage = ex.getMessage();
     }
 
-    public static ErrorResponseDto of(ResultResponse resultResponse) {
-        return new ErrorResponseDto(resultResponse);
+    public static ErrorResponseDto of(CodeData codeData) {
+        return new ErrorResponseDto(codeData);
+    }
+
+    public static ErrorResponseDto of(CodeData codeData, RuntimeException ex) {
+        return new ErrorResponseDto(codeData, ex);
     }
 }

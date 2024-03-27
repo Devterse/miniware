@@ -1,9 +1,10 @@
-package com.miniware.blog.api.exception;
+package com.miniware.blog.api.common.exception;
 
+import com.miniware.blog.api.common.constant.CodeData;
+import com.miniware.blog.api.common.constant.CommonCode;
 import com.miniware.blog.api.common.dto.ErrorResponseDto;
 import com.miniware.blog.api.common.dto.ValidationResponseDto;
-import com.miniware.blog.api.post.constant.PostResult;
-import com.miniware.blog.api.post.exception.PostException;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,11 +20,12 @@ import java.util.NoSuchElementException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(PostException.class)
-    public ResponseEntity<ErrorResponseDto> postException(PostException ex, WebRequest request) {
-        PostResult postResult = ex.getPostResult();
-        ErrorResponseDto response = ErrorResponseDto.of(postResult);
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    //커스텀 예외처리
+    @ExceptionHandler(CustomException.class)
+    public ResponseEntity<ErrorResponseDto> customException(CustomException ex, WebRequest request) {
+        CodeData result = ex.getCodeData();
+        ErrorResponseDto response = ErrorResponseDto.of(result);
+        return ResponseEntity.status(result.getHttpStatus()).body(response);
     }
 
     //유효성 검증 예외 처리
@@ -32,6 +34,13 @@ public class GlobalExceptionHandler {
         BindingResult bindingResult = ex.getBindingResult();
         ValidationResponseDto response = ValidationResponseDto.of(bindingResult);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    //데이터베이스 처리 예외처리
+    @ExceptionHandler(DataAccessException.class)
+    public ResponseEntity<Object> handleDataAccessException(DataAccessException ex) {
+        ErrorResponseDto response = ErrorResponseDto.of(CommonCode.INTERNAL_ERROR, ex);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
 
     // 접근 거부 예외 처리

@@ -15,7 +15,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import static com.miniware.blog.api.post.constant.PostResult.*;
+import static com.miniware.blog.api.post.constant.PostCode.*;
 
 @Slf4j
 @RestController
