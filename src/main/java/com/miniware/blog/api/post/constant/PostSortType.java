@@ -17,7 +17,4 @@ public enum PostSortType  {
     private final String desc;
     private final OrderSpecifier<?> orderSpecifier;
 
-    public OrderSpecifier<?> getOrderSpecifier() {
-        return this.orderSpecifier;
-    }
 }

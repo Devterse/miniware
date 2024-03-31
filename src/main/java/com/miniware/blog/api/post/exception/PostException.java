@@ -4,12 +4,12 @@ import com.miniware.blog.api.common.constant.CodeData;
 import com.miniware.blog.api.common.exception.CustomException;
 
 public class PostException extends CustomException {
-    public PostException(CodeData errorData) {
-        super(errorData);
+    public PostException(CodeData codeData) {
+        super(codeData);
     }
 
-    public static PostException of(CodeData errorData) {
-        return new PostException(errorData);
+    public static PostException of(CodeData codeData) {
+        return new PostException(codeData);
     }
 
 }

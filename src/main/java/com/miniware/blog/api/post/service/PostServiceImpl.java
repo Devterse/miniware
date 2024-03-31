@@ -25,7 +25,10 @@ public class PostServiceImpl implements PostService{
 
     @Override
     public Page<PostResponse> getList(PostSearch searchDto, Pageable pageable) {
-        return postRepository.getList(searchDto, pageable).map(PostResponse::new);
+        return Optional.of(postRepository.getList(searchDto, pageable)
+                .map(PostResponse::new))
+                .filter(p -> !p.getContent().isEmpty())
+                .orElseThrow(() -> PostException.of(POST_NOT_FOUND));
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.miniware.blog.api.post.controller;
 
+import com.miniware.blog.api.common.constant.CommonCode;
 import com.miniware.blog.api.common.dto.DataResponseDto;
 import com.miniware.blog.api.common.dto.PagingDto;
 import com.miniware.blog.api.post.dto.request.PostCreate;
@@ -15,6 +16,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import static com.miniware.blog.api.common.constant.CommonCode.*;
 import static com.miniware.blog.api.post.constant.PostCode.*;
 
 @Slf4j
@@ -35,7 +38,7 @@ public class PostController {
     @GetMapping("/{postId}")
     public ResponseEntity<DataResponseDto<PostResponse>> get(@PathVariable Long postId) {
         PostResponse postResponse = postService.get(postId);
-        DataResponseDto<PostResponse> result = DataResponseDto.of(postResponse);
+        DataResponseDto<PostResponse> result = DataResponseDto.of(postResponse, OK);
         return ResponseEntity.ok(result);
     }
 
