@@ -1,26 +1,17 @@
 package com.miniware.blog.api.post.constant;
 
-import com.miniware.blog.api.common.mapper.EnumMapperType;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import lombok.Getter;
+import com.miniware.blog.api.common.mapper.SearchType;
 import lombok.RequiredArgsConstructor;
-import org.springframework.util.StringUtils;
-import java.util.function.Function;
-import static com.miniware.blog.api.post.entity.QPost.post;
 
-@Getter
+
 @RequiredArgsConstructor
-public enum PostSearchType implements EnumMapperType {
+public enum PostSearchType implements SearchType {
 
-    TITLE("제목", post.title::contains),
-    CONTENT("내용", post.content::contains);
+    T("제목", "title"),
+    C("내용", "content");
 
     private final String desc;
-    private final Function<String, BooleanExpression> expression;
-
-    public BooleanExpression getEq(String searchValue) {
-        return StringUtils.hasText(searchValue) ? expression.apply(searchValue) : null;
-    }
+    private final String field;
 
     @Override
     public String getCode() {
@@ -28,7 +19,14 @@ public enum PostSearchType implements EnumMapperType {
     }
 
     @Override
-    public String getTitle() {
-        return desc;
+    public String getDesc() {
+        return this.desc;
     }
+
+    @Override
+    public String getField() {
+        return this.field;
+    }
+
+
 }

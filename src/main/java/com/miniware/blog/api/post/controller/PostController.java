@@ -1,6 +1,5 @@
 package com.miniware.blog.api.post.controller;
 
-import com.miniware.blog.api.common.constant.CommonCode;
 import com.miniware.blog.api.common.dto.DataResponseDto;
 import com.miniware.blog.api.common.dto.PagingDto;
 import com.miniware.blog.api.post.dto.request.PostCreate;
@@ -17,7 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static com.miniware.blog.api.common.constant.CommonCode.*;
+import static com.miniware.blog.api.common.constant.ResponseCode.*;
 import static com.miniware.blog.api.post.constant.PostCode.*;
 
 @Slf4j

@@ -1,6 +1,6 @@
 package com.miniware.blog.api.common.dto;
 
-import com.miniware.blog.api.common.constant.CommonCode;
+import com.miniware.blog.api.common.constant.ResponseCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.BindingResult;
@@ -14,7 +14,7 @@ public class ValidationResponseDto extends ResponseDto{
     private final List<FieldErrors> fieldErrors; // 여러 필드 오류를 저장할 리스트
     
     private ValidationResponseDto(BindingResult bindingResult) {
-        super(false, CommonCode.VALIDATION_ERROR.getCode(), CommonCode.VALIDATION_ERROR.getMessage());
+        super(false, ResponseCode.VALIDATION_ERROR.getCode(), ResponseCode.VALIDATION_ERROR.getMessage());
         this.fieldErrors = bindingResult.getFieldErrors().stream()
                 .map(error -> new FieldErrors(error.getField(), error.getDefaultMessage()))
                 .collect(Collectors.toList());

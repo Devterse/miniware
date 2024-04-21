@@ -1,8 +1,13 @@
 package com.miniware.blog.api.post.repository;
 
+import com.miniware.blog.api.post.constant.PostSearchType;
 import com.miniware.blog.api.post.dto.request.PostSearch;
 import com.miniware.blog.api.post.entity.Post;
-import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.Expression;
+import com.querydsl.core.types.Order;
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.Path;
+import com.querydsl.core.types.dsl.*;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +15,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import java.util.List;
+import java.util.Optional;
+
 import static com.miniware.blog.api.post.entity.QPost.post;
 
 @RequiredArgsConstructor
@@ -22,11 +29,11 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
         List<Post> content = jpaQueryFactory
                 .selectFrom(post)
                 .where(
-                        searchEq(searchDto)
+                        searchCondition(searchDto)
                 )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .orderBy(searchDto.getSortType().getOrderSpecifier())
+                .orderBy(dynamicOrder(post, searchDto.getSortType().getField()))
                 .fetch();
 
         JPAQuery<Long> countQuery = jpaQueryFactory.select(post.count())
@@ -35,8 +42,18 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
     }
 
-    private BooleanExpression searchEq(PostSearch search) {
-        return search.getSearchType() != null ? search.getSearchType().getEq(search.getKeyValue()) : null;
+    private BooleanExpression searchCondition(PostSearch postSearch) {
+        return Optional.ofNullable(postSearch.getSearchType())
+                .map(searchType -> Expressions.stringPath(post, searchType.getField()).containsIgnoreCase(postSearch.getKeyValue()))
+                .orElse(null);
     }
 
+    private OrderSpecifier<?> dynamicOrder(PostSearch postSearch) {
+        StringPath fieldPath = Expressions.stringPath(post, postSearch.getSortType().getField());
+        return new OrderSpecifier<>(Order.DESC, fieldPath);
+    }
+    public static <T> OrderSpecifier<?> dynamicOrder(EntityPathBase<T> entityPath, String fieldName) {
+        StringPath fieldPath = Expressions.stringPath(entityPath, fieldName);
+        return new OrderSpecifier<>(Order.DESC, fieldPath);
+    }
 }

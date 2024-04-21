@@ -1,7 +1,7 @@
 package com.miniware.blog.api.common.exception;
 
 import com.miniware.blog.api.common.constant.CodeData;
-import com.miniware.blog.api.common.constant.CommonCode;
+import com.miniware.blog.api.common.constant.ResponseCode;
 import com.miniware.blog.api.common.dto.ErrorResponseDto;
 import com.miniware.blog.api.common.dto.ValidationResponseDto;
 import org.springframework.dao.DataAccessException;
@@ -36,21 +36,28 @@ public class GlobalExceptionHandler {
     //데이터 처리 예외처리
     @ExceptionHandler(DataAccessException.class)
     public ResponseEntity<ErrorResponseDto> handleDataAccessException(DataAccessException ex) {
-        ErrorResponseDto response = ErrorResponseDto.of(CommonCode.INTERNAL_ERROR, ex);
+        ErrorResponseDto response = ErrorResponseDto.of(ResponseCode.INTERNAL_ERROR, ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
 
     //Request값이 잘못된 형식일때
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ErrorResponseDto> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex) {
-        ErrorResponseDto response = ErrorResponseDto.of(CommonCode.BAD_REQUEST, ex);
+        ErrorResponseDto response = ErrorResponseDto.of(ResponseCode.BAD_REQUEST, ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    //null예외처리
+    @ExceptionHandler(NullPointerException.class)
+    public ResponseEntity<ErrorResponseDto> NullPointerException(NullPointerException ex) {
+        ErrorResponseDto response = ErrorResponseDto.of(ResponseCode.NULL_POINTER_ERROR, ex);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
 
     // 예외 처리
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDto> handleAllUncaughtException(Exception ex) {
-        ErrorResponseDto response = ErrorResponseDto.of(CommonCode.BAD_REQUEST, ex);
+        ErrorResponseDto response = ErrorResponseDto.of(ResponseCode.BAD_REQUEST, ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
