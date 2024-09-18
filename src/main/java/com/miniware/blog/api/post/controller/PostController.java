@@ -42,7 +42,7 @@ public class PostController {
     }
 
     @PostMapping
-    public ResponseEntity<DataResponseDto<PostResponse>> write(@Valid @RequestBody PostCreate request) {
+    public ResponseEntity<DataResponseDto<PostResponse>> save(@Valid @RequestBody PostCreate request) {
         PostResponse postResponse = postService.save(request);
         DataResponseDto<PostResponse> result = DataResponseDto.of(postResponse, POST_CREATED);
         return ResponseEntity.ok(result);

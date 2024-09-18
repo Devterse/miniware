@@ -10,7 +10,7 @@ import org.springframework.data.domain.Pageable;
 public interface PostService {
 
     Page<PostResponse> getList(PostSearch searchDto, Pageable pageable);
-    PostResponse save(PostCreate request);
+    PostResponse save(PostCreate postCreate);
     PostResponse get(Long postId);
     PostResponse edit(Long postId, PostEdit postEdit);
     PostResponse delete(Long postId);

@@ -29,7 +29,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
         List<Post> content = jpaQueryFactory
                 .selectFrom(post)
                 .where(
-                        searchCondition(searchDto)
+                    searchCondition(searchDto)
                 )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())

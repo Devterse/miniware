@@ -4,12 +4,17 @@ import com.miniware.blog.api.common.constant.CodeData;
 import lombok.Getter;
 
 @Getter
-public abstract class CustomException extends RuntimeException{
+public class CustomException extends RuntimeException{
 
     private final CodeData codeData;
 
-    protected CustomException(CodeData codeData) {
+    public CustomException(CodeData codeData) {
         super(codeData.getMessage());
         this.codeData = codeData;
     }
+
+    public static CustomException of(CodeData codeData) {
+        return new CustomException(codeData);
+    }
+
 }

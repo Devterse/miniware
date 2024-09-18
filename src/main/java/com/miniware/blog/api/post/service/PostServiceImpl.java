@@ -1,5 +1,6 @@
 package com.miniware.blog.api.post.service;
 
+import com.miniware.blog.api.common.exception.CustomException;
 import com.miniware.blog.api.post.dto.request.PostCreate;
 import com.miniware.blog.api.post.dto.request.PostEdit;
 import com.miniware.blog.api.post.dto.request.PostSearch;
@@ -28,32 +29,35 @@ public class PostServiceImpl implements PostService{
         return Optional.of(postRepository.getList(searchDto, pageable)
                 .map(PostResponse::new))
                 .filter(p -> !p.getContent().isEmpty())
-                .orElseThrow(() -> PostException.of(POST_NOT_FOUND));
+                .orElseThrow(() -> CustomException.of(POST_NOT_FOUND));
     }
 
     @Override
     public PostResponse get(Long postId) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> PostException.of(POST_NOT_FOUND));
+        /*postRepository.findById(postId).map(PostResponse::of).orElseThrow(() -> PostException.of(POST_NOT_FOUND));
+        Optional<PostResponse> postResponse = postRepository.findById(postId).map(PostResponse::of);
+        postResponse.map(DataResponseDto::of).orElse(DataResponseDto.of(null));*/
+        Post post = postRepository.findById(postId).orElseThrow(() -> CustomException.of(POST_NOT_FOUND));
         return PostResponse.of(post);
     }
 
     @Override
     public PostResponse save(PostCreate postCreate) {
         Post post = postRepository.save(postCreate.toEntity());
-        return Optional.of(post).map(PostResponse::new).orElseThrow(() -> PostException.of(POST_CREATION_FAILED));
+        return Optional.of(post).map(PostResponse::new).orElseThrow(() -> CustomException.of(POST_CREATION_FAILED));
     }
 
     @Transactional
     @Override
     public PostResponse edit(Long postId, PostEdit postEdit) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> PostException.of(POST_NOT_FOUND));
+        Post post = postRepository.findById(postId).orElseThrow(() -> CustomException.of(POST_NOT_FOUND));
         post.edit(postEdit);
         return PostResponse.of(post);
     }
 
     @Override
     public PostResponse delete(Long postId) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> PostException.of(POST_NOT_FOUND));
+        Post post = postRepository.findById(postId).orElseThrow(() -> CustomException.of(POST_NOT_FOUND));
         postRepository.delete(post);
         return PostResponse.of(post);
     }

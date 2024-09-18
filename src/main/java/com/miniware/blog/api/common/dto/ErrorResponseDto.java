@@ -13,6 +13,7 @@ public class ErrorResponseDto extends ResponseDto {
     private ErrorResponseDto(CodeData codeData) {
         super(false, codeData.getCode(), codeData.getMessage());
     }
+
     private ErrorResponseDto(CodeData codeData, Exception ex) {
         super(false, codeData.getCode(), codeData.getMessage());
         this.exMessage = ex.getMessage();
