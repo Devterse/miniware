@@ -1,12 +1,9 @@
 package com.miniware.blog.api.post.repository;
 
-import com.miniware.blog.api.post.constant.PostSearchType;
 import com.miniware.blog.api.post.dto.request.PostSearch;
 import com.miniware.blog.api.post.entity.Post;
-import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.Path;
 import com.querydsl.core.types.dsl.*;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -17,12 +14,22 @@ import org.springframework.data.support.PageableExecutionUtils;
 import java.util.List;
 import java.util.Optional;
 
+import static com.miniware.blog.api.board.entity.QBoard.board;
 import static com.miniware.blog.api.post.entity.QPost.post;
 
 @RequiredArgsConstructor
 public class PostRepositoryImpl implements PostRepositoryCustom {
 
     private final JPAQueryFactory jpaQueryFactory;
+
+    @Override
+    public Optional<Post> findPostById(Long id) {
+        Post result = jpaQueryFactory.selectFrom(post)
+                .join(post.board, board).fetchJoin()
+                .where(post.id.eq(id))
+                .fetchOne();
+        return Optional.ofNullable(result);
+    }
 
     @Override
     public Page<Post> getList(PostSearch searchDto, Pageable pageable) {

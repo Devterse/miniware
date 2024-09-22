@@ -1,5 +1,8 @@
 package com.miniware.blog.api.post.service;
 
+import com.miniware.blog.api.board.entity.Board;
+import com.miniware.blog.api.board.exception.BoardException;
+import com.miniware.blog.api.board.repository.BoardRepository;
 import com.miniware.blog.api.common.exception.CustomException;
 import com.miniware.blog.api.post.dto.request.PostCreate;
 import com.miniware.blog.api.post.dto.request.PostEdit;
@@ -15,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
+
 import static com.miniware.blog.api.post.constant.PostCode.*;
 
 @Slf4j
@@ -23,41 +27,41 @@ import static com.miniware.blog.api.post.constant.PostCode.*;
 public class PostServiceImpl implements PostService{
 
     private final PostRepository postRepository;
+    private final BoardRepository boardRepository;
 
     @Override
     public Page<PostResponse> getList(PostSearch searchDto, Pageable pageable) {
         return Optional.of(postRepository.getList(searchDto, pageable)
                 .map(PostResponse::new))
                 .filter(p -> !p.getContent().isEmpty())
-                .orElseThrow(() -> CustomException.of(POST_NOT_FOUND));
+                .orElseThrow(PostException::notFound);
     }
 
     @Override
     public PostResponse get(Long postId) {
-        /*postRepository.findById(postId).map(PostResponse::of).orElseThrow(() -> PostException.of(POST_NOT_FOUND));
-        Optional<PostResponse> postResponse = postRepository.findById(postId).map(PostResponse::of);
-        postResponse.map(DataResponseDto::of).orElse(DataResponseDto.of(null));*/
-        Post post = postRepository.findById(postId).orElseThrow(() -> CustomException.of(POST_NOT_FOUND));
+        Post post = postRepository.findPostById(postId).orElseThrow(PostException::notFound);
         return PostResponse.of(post);
     }
 
     @Override
     public PostResponse save(PostCreate postCreate) {
-        Post post = postRepository.save(postCreate.toEntity());
-        return Optional.of(post).map(PostResponse::new).orElseThrow(() -> CustomException.of(POST_CREATION_FAILED));
+        Board board = boardRepository.findById(postCreate.getBoardId()).orElseThrow(BoardException::notFound);
+        Post post = postRepository.save(postCreate.toEntity(board));
+        return Optional.of(post).map(PostResponse::new).orElseThrow(BoardException::creationFailed);
     }
 
     @Transactional
     @Override
     public PostResponse edit(Long postId, PostEdit postEdit) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> CustomException.of(POST_NOT_FOUND));
-        post.edit(postEdit);
+        Board board = boardRepository.findById(postEdit.getBoardId()).orElseThrow(BoardException::notFound);
+        Post post = postRepository.findById(postId).orElseThrow(PostException::notFound);
+        post.edit(postEdit, board);
         return PostResponse.of(post);
     }
 
     @Override
     public PostResponse delete(Long postId) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> CustomException.of(POST_NOT_FOUND));
+        Post post = postRepository.findById(postId).orElseThrow(PostException::notFound);
         postRepository.delete(post);
         return PostResponse.of(post);
     }

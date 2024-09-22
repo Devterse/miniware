@@ -27,11 +27,12 @@ public class Post extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     private String content;
 
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "board_id")
+    @JoinColumn(name = "board_id", nullable = false)
     private Board board;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
     private List<Comment> comments;
 
 
@@ -42,12 +43,9 @@ public class Post extends BaseEntity {
         this.board = board;
     }
 
-    public void addBoard(Board board) {
-        this.board = board;
-    }
-
-    public void edit(PostEdit postEdit) {
+    public void edit(PostEdit postEdit, Board board) {
         this.title = postEdit.getTitle();
         this.content = postEdit.getContent();
+        this.board = board;
     }
 }

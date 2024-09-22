@@ -42,7 +42,6 @@ public class BoardController {
         return ResponseEntity.ok(result);
     }
 
-
     //게시판 수정
     @PutMapping("/{boardId}")
     public ResponseEntity<DataResponseDto<BoardResponse>> update(@PathVariable Long boardId, @RequestBody BoardEdit boardEdit) {

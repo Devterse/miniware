@@ -1,6 +1,7 @@
 package com.miniware.blog.api.board.entity;
 
 import com.miniware.blog.api.board.dto.request.BoardEdit;
+import com.miniware.blog.api.common.entity.BaseEntity;
 import com.miniware.blog.api.post.entity.Post;
 import jakarta.persistence.*;
 import lombok.*;
@@ -13,7 +14,7 @@ import java.util.List;
 @Table(name = "tb_board")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class Board {
+public class Board extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,18 +22,27 @@ public class Board {
 
     private String name;
 
-    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
-    private List<Post> posts;
+    private String description;
+
+    @OneToMany(mappedBy = "board",  fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Post> posts = new ArrayList<>();
 
     @Builder
-
-    public Board(String name) {
+    public Board(String name, String description) {
         this.name = name;
+        this.description = description;
     }
 
+    //Post 추가
     public void addPost(Post post) {
         this.posts.add(post);
-        post.addBoard(this);
+        post.setBoard(this);
+    }
+
+    //Post 삭제
+    public void removePost(Post post) {
+        posts.remove(post);
+        post.setBoard(null);
     }
 
     public void edit(BoardEdit boardEdit) {

@@ -5,6 +5,7 @@ import com.miniware.blog.api.board.dto.request.BoardCreate;
 import com.miniware.blog.api.board.dto.request.BoardEdit;
 import com.miniware.blog.api.board.dto.response.BoardResponse;
 import com.miniware.blog.api.board.entity.Board;
+import com.miniware.blog.api.board.exception.BoardException;
 import com.miniware.blog.api.board.repository.BoardRepository;
 import com.miniware.blog.api.common.exception.CustomException;
 import lombok.RequiredArgsConstructor;
@@ -29,25 +30,25 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public BoardResponse save(BoardCreate boardCreate) {
         Board board = boardRepository.save(boardCreate.toEntity());
-        return Optional.of(board).map(BoardResponse::new).orElseThrow(() -> CustomException.of(BoardCode.BOARD_CREATION_FAILED));
+        return Optional.of(board).map(BoardResponse::new).orElseThrow(BoardException::creationFailed);
     }
 
     @Override
     public BoardResponse get(Long boardId) {
-        Board board = boardRepository.findById(boardId).orElseThrow(() -> CustomException.of(BoardCode.BOARD_NOT_FOUND));
+        Board board = boardRepository.findById(boardId).orElseThrow(BoardException::notFound);
         return BoardResponse.of(board);
     }
 
     @Override
     public BoardResponse edit(Long boardId, BoardEdit boardEdit) {
-        Board board = boardRepository.findById(boardId).orElseThrow(() -> CustomException.of(BoardCode.BOARD_NOT_FOUND));
+        Board board = boardRepository.findById(boardId).orElseThrow(BoardException::notFound);
         board.edit(boardEdit);
         return BoardResponse.of(board);
     }
 
     @Override
     public BoardResponse delete(Long boardId) {
-        Board board = boardRepository.findById(boardId).orElseThrow(() -> CustomException.of(BoardCode.BOARD_NOT_FOUND));
+        Board board = boardRepository.findById(boardId).orElseThrow(BoardException::notFound);
         boardRepository.delete(board);
         return BoardResponse.of(board);
     }
