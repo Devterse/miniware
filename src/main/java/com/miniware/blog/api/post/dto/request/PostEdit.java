@@ -1,6 +1,7 @@
 package com.miniware.blog.api.post.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -13,7 +14,7 @@ public class PostEdit {
     @NotBlank(message = "컨텐츠를 입력해주세요.")
     public String content;
 
-    @NotBlank(message = "게시판 타입을 선택해 주세요.")
+    @NotNull(message = "게시판 타입을 선택해 주세요.")
     private final Long boardId;
 
     @Builder
