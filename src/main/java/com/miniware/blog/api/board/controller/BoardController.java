@@ -1,6 +1,5 @@
 package com.miniware.blog.api.board.controller;
 
-import com.miniware.blog.api.board.constant.BoardCode;
 import com.miniware.blog.api.board.dto.request.BoardCreate;
 import com.miniware.blog.api.board.dto.request.BoardEdit;
 import com.miniware.blog.api.board.dto.response.BoardResponse;
@@ -9,7 +8,10 @@ import com.miniware.blog.api.common.dto.DataResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import static com.miniware.blog.api.board.constant.BoardCode.*;
 
@@ -22,8 +24,17 @@ public class BoardController {
     private final BoardService boardService;
 
     @GetMapping
-    public void getAllBoards() {
-        boardService.findAll();
+    public ResponseEntity<DataResponseDto<List<BoardResponse>>> getList() {
+        List<BoardResponse> list = boardService.findAll();
+        return ResponseEntity.ok(DataResponseDto.of(list));
+    }
+
+    /*게시판 조회*/
+    @GetMapping("/{boardId}")
+    public ResponseEntity<DataResponseDto<BoardResponse>> get(@PathVariable Long boardId) {
+        BoardResponse boardResponse = boardService.get(boardId);
+        DataResponseDto<BoardResponse> result = DataResponseDto.of(boardResponse);
+        return ResponseEntity.ok(result);
     }
 
     /*게시판 등록*/
@@ -34,14 +45,6 @@ public class BoardController {
         return ResponseEntity.ok(result);
     }
 
-    /*게시판 조회*/
-    @GetMapping("/{boardId}")
-    public ResponseEntity<DataResponseDto<BoardResponse>> getBoardById(@PathVariable Long boardId) {
-        BoardResponse boardResponse = boardService.get(boardId);
-        DataResponseDto<BoardResponse> result = DataResponseDto.of(boardResponse);
-        return ResponseEntity.ok(result);
-    }
-
     //게시판 수정
     @PutMapping("/{boardId}")
     public ResponseEntity<DataResponseDto<BoardResponse>> update(@PathVariable Long boardId, @RequestBody BoardEdit boardEdit) {
@@ -49,7 +52,6 @@ public class BoardController {
         DataResponseDto<BoardResponse> result = DataResponseDto.of(edit, BOARD_UPDATED);
         return ResponseEntity.ok(result);
     }
-
 
     //게시판 삭제
     @DeleteMapping("/{boardId}")

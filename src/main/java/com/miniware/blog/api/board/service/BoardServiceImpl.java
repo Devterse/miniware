@@ -11,6 +11,7 @@ import com.miniware.blog.api.common.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,13 +25,7 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public List<BoardResponse> findAll() {
-        return boardRepository.findAll().stream().map(BoardResponse::of).toList();
-    }
-
-    @Override
-    public BoardResponse save(BoardCreate boardCreate) {
-        Board board = boardRepository.save(boardCreate.toEntity());
-        return Optional.of(board).map(BoardResponse::new).orElseThrow(BoardException::creationFailed);
+        return boardRepository.findAll().stream().map(BoardResponse::new).toList();
     }
 
     @Override
@@ -40,6 +35,13 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
+    public BoardResponse save(BoardCreate boardCreate) {
+        Board board = boardRepository.save(boardCreate.toEntity());
+        return Optional.of(board).map(BoardResponse::new).orElseThrow(BoardException::creationFailed);
+    }
+
+    @Override
+    @Transactional
     public BoardResponse edit(Long boardId, BoardEdit boardEdit) {
         Board board = boardRepository.findById(boardId).orElseThrow(BoardException::notFound);
         board.edit(boardEdit);

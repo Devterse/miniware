@@ -10,8 +10,12 @@ public class BoardEdit {
     @NotBlank(message = "게시판명을 입력해주세요.")
     private String name;
 
+    @NotBlank(message = "설명을 입력해주세요.")
+    private String description;
+
     @Builder
-    public BoardEdit(String name) {
+    public BoardEdit(String name, String description) {
         this.name = name;
+        this.description = description;
     }
 }

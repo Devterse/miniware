@@ -9,8 +9,8 @@ import java.util.List;
 public interface BoardService {
 
     List<BoardResponse> findAll();
-    BoardResponse save(BoardCreate boardCreate);
     BoardResponse get(Long boardId);
+    BoardResponse save(BoardCreate boardCreate);
     BoardResponse edit(Long boardId, BoardEdit boardEdit);
     BoardResponse delete(Long boardId);
 }

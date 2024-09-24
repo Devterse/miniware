@@ -35,6 +35,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
     public Page<Post> getList(PostSearch searchDto, Pageable pageable) {
         List<Post> content = jpaQueryFactory
                 .selectFrom(post)
+                .leftJoin(post.board, board).fetchJoin()
                 .where(
                     searchCondition(searchDto)
                 )
