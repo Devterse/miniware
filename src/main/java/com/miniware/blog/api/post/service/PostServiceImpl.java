@@ -43,7 +43,9 @@ public class PostServiceImpl implements PostService{
     @Override
     public PostResponse save(PostCreate postCreate) {
         Board board = boardRepository.findById(postCreate.getBoardId()).orElseThrow(BoardException::notFound);
-        Post post = postRepository.save(postCreate.toEntity(board));
+        Post post = postCreate.toEntity(board);
+        board.addPost(post);    //게시판에 게시글 추가(양방향 관계 설정)
+        postRepository.save(post);
         return PostResponse.of(post);
     }
 
@@ -62,6 +64,8 @@ public class PostServiceImpl implements PostService{
     @Override
     public PostResponse delete(Long postId) {
         Post post = postRepository.findById(postId).orElseThrow(PostException::notFound);
+        Board board = post.getBoard();  //게시판에서 게시글 제거(양방향 관계 해제)
+        board.removePost(post); //양방향 관계 해제
         postRepository.delete(post);
         return PostResponse.of(post);
     }

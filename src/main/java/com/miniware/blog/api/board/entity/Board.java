@@ -34,6 +34,16 @@ public class Board extends BaseEntity {
         this.description = description;
     }
 
+    public void addPost(Post post) {
+        posts.add(post);
+        post.setBoard(this);
+    }
+
+    public void removePost(Post post) {
+        posts.remove(post);
+        post.setBoard(null);
+    }
+
     public void edit(BoardEdit boardEdit) {
         this.name = boardEdit.getName();
         this.description = boardEdit.getDescription();
