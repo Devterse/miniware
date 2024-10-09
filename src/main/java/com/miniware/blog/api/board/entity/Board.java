@@ -34,19 +34,22 @@ public class Board extends BaseEntity {
         this.description = description;
     }
 
-    public void addPost(Post post) {
-        posts.add(post);
-        post.setBoard(this);
-    }
-
-    public void removePost(Post post) {
-        posts.remove(post);
-        post.setBoard(null);
-    }
-
+    //board 수정 메서드
     public void edit(BoardEdit boardEdit) {
         this.name = boardEdit.getName();
         this.description = boardEdit.getDescription();
+    }
+
+    //post 추가 메서드
+    public void addPost(Post post) {
+        this.posts.add(post);
+        post.setBoard(this);
+    }
+
+    //post 제거 메서드
+    public void removePost(Post post) {
+        this.posts.remove(post);
+        post.setBoard(null);
     }
 
 }

@@ -37,4 +37,8 @@ public class BoardException extends CustomException {
         return new BoardException(BOARD_DELETION_FAILED);
     }
 
+    public static BoardException duplicate() {
+        return new BoardException(BOARD_NAME_DUPLICATE);
+    }
+
 }

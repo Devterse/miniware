@@ -7,6 +7,7 @@ import com.miniware.blog.api.post.dto.request.PostEdit;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -22,7 +23,6 @@ public class Post extends BaseEntity {
     private Long id;
 
     private String title;
-
 //    @Lob
     @Column(columnDefinition = "TEXT")
     private String content;
@@ -32,9 +32,6 @@ public class Post extends BaseEntity {
     @JoinColumn(name = "board_id", nullable = false)
     private Board board;
 
-    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
-    private List<Comment> comments;
-
     @Builder
     public Post(String title, String content, Board board) {
         this.title = title;
@@ -42,6 +39,7 @@ public class Post extends BaseEntity {
         this.board = board;
     }
 
+    //post 수정 메서드
     public void edit(PostEdit postEdit, Board board) {
         this.title = postEdit.getTitle();
         this.content = postEdit.getContent();

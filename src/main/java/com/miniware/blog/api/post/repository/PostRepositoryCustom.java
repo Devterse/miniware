@@ -10,7 +10,9 @@ import java.util.Optional;
 
 public interface PostRepositoryCustom {
 
-    Page<Post> getList(PostSearch searchDto, Pageable pageable);
-
     Optional<Post> findPostById(Long id);
+
+    Page<Post> getList(Long boardId, PostSearch searchDto, Pageable pageable);
+
+
 }

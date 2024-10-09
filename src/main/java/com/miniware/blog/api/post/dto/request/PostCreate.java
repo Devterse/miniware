@@ -16,21 +16,20 @@ public class PostCreate {
     @NotBlank(message = "컨텐츠를 입력해주세요.")
     private final String content;
 
-    @NotNull(message = "게시판 타입을 선택해 주세요.")
-    private final Long boardId;
+    /*@NotNull(message = "게시판 타입을 선택해 주세요.")
+    private final Long boardId;*/
 
     @Builder
-    public PostCreate(String title, String content, Long boardId) {
+    public PostCreate(String title, String content) {
         this.title = title;
         this.content = content;
-        this.boardId = boardId;
+//        this.boardId = boardId;
     }
 
-    public Post toEntity(Board board) {
+    public Post toEntity() {
         return Post.builder()
                 .title(title)
                 .content(content)
-                .board(board)
                 .build();
     }
 

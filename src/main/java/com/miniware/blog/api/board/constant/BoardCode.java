@@ -13,7 +13,8 @@ public enum BoardCode implements CodeData {
     BOARD_UPDATED("b004", HttpStatus.OK, "게시판이 수정되었습니다."),
     BOARD_UPDATE_FAILED("b005", HttpStatus.BAD_REQUEST, "게시판 수정에 실패하였습니다."),
     BOARD_DELETED("b006", HttpStatus.OK, "게시판이 삭제되었습니다."),
-    BOARD_DELETION_FAILED("b007", HttpStatus.BAD_REQUEST, "게시판 삭제에 실패하였습니다.");
+    BOARD_DELETION_FAILED("b007", HttpStatus.BAD_REQUEST, "게시판 삭제에 실패하였습니다."),
+    BOARD_NAME_DUPLICATE("b008", HttpStatus.CONFLICT, "중복된 게시판 이름입니다.");
 
     private final String code;
     private final HttpStatus httpStatus;

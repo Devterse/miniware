@@ -36,14 +36,22 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public BoardResponse save(BoardCreate boardCreate) {
+        if(boardRepository.existsByName(boardCreate.getName())) {
+            throw BoardException.duplicate();
+        }
         Board board = boardRepository.save(boardCreate.toEntity());
-        return Optional.of(board).map(BoardResponse::new).orElseThrow(BoardException::creationFailed);
+        return BoardResponse.of(board);
     }
 
     @Override
     @Transactional
     public BoardResponse edit(Long boardId, BoardEdit boardEdit) {
         Board board = boardRepository.findById(boardId).orElseThrow(BoardException::notFound);
+
+        if (boardRepository.existsByNameAndIdNot(boardEdit.getName(), boardId)) {
+            throw BoardException.duplicate();
+        }
+
         board.edit(boardEdit);
         return BoardResponse.of(board);
     }

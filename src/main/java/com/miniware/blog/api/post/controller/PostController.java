@@ -27,10 +27,14 @@ public class PostController {
 
     private final PostService postService;
 
-    @GetMapping
-    public ResponseEntity<DataResponseDto<Page<PostResponse>>> getList(@ModelAttribute PostSearch searchDto, PagingDto pagingDto) {
+    @GetMapping("/board/{boardId}")
+    public ResponseEntity<DataResponseDto<Page<PostResponse>>> getList(
+            @PathVariable Long boardId,
+            @ModelAttribute PostSearch searchDto,
+            PagingDto pagingDto) {
         Pageable pageRequest = PageRequest.of(pagingDto.getPage(), pagingDto.getSize());
-        DataResponseDto<Page<PostResponse>> result = DataResponseDto.of(postService.getList(searchDto, pageRequest));
+        Page<PostResponse> list = postService.getList(boardId, searchDto, pageRequest);
+        DataResponseDto<Page<PostResponse>> result = DataResponseDto.of(list);
         return ResponseEntity.ok(result);
     }
 
@@ -41,9 +45,9 @@ public class PostController {
         return ResponseEntity.ok(result);
     }
 
-    @PostMapping
-    public ResponseEntity<DataResponseDto<PostResponse>> save(@Valid @RequestBody PostCreate request) {
-        PostResponse postResponse = postService.save(request);
+    @PostMapping("/board/{boardId}")
+    public ResponseEntity<DataResponseDto<PostResponse>> save(@PathVariable Long boardId, @Valid @RequestBody PostCreate request) {
+        PostResponse postResponse = postService.save(boardId, request);
         DataResponseDto<PostResponse> result = DataResponseDto.of(postResponse, POST_CREATED);
         return ResponseEntity.ok(result);
     }

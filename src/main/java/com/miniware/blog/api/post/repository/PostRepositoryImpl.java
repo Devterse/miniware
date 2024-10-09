@@ -32,12 +32,13 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
     }
 
     @Override
-    public Page<Post> getList(PostSearch searchDto, Pageable pageable) {
+    public Page<Post> getList(Long boardId, PostSearch searchDto, Pageable pageable) {
         List<Post> content = jpaQueryFactory
                 .selectFrom(post)
-                .leftJoin(post.board, board).fetchJoin()
+                .join(post.board, board).fetchJoin()
                 .where(
-                    searchCondition(searchDto)
+                        post.board.id.eq(boardId)
+                        .and(searchCondition(searchDto))
                 )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
