@@ -1,7 +1,6 @@
 package com.miniware.blog.api.comment.dto.request;
 
 import com.miniware.blog.api.comment.entity.Comment;
-import com.miniware.blog.api.post.entity.Post;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,24 +26,5 @@ public class CommentCreate {
         this.author = author;
         this.password = password;
         this.content = content;
-    }
-
-    public Comment toEntity(Post post) {
-        return Comment.builder()
-                .author(author)
-                .password(password)
-                .content(content)
-                .post(post)
-                .build();
-    }
-
-    public Comment toEntity(Comment parent) {
-        return Comment.builder()
-                .author(author)
-                .password(password)
-                .content(content)
-                .post(parent.getPost())
-                .parent(parent)
-                .build();
     }
 }

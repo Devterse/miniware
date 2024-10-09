@@ -9,9 +9,9 @@ import com.miniware.blog.api.comment.repository.CommentRepository;
 import com.miniware.blog.api.post.entity.Post;
 import com.miniware.blog.api.post.exception.PostException;
 import com.miniware.blog.api.post.repository.PostRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.List;
@@ -26,28 +26,44 @@ public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
 
     @Override
-    public CommentResponse addComment(Long postId, CommentCreate request) {
+    @Transactional
+    public CommentResponse addComment(Long postId, CommentCreate commentCreate) {
         Post post = postRepository.findById(postId).orElseThrow(PostException::notFound);
-        Comment comment = request.toEntity(post);
+        Comment comment = Comment.builder()
+                .post(post)
+                .content(commentCreate.getContent())
+                .password(commentCreate.getPassword())
+                .author(commentCreate.getAuthor())
+                .parent(null)
+                .build();
         Comment response = commentRepository.save(comment);
         return CommentResponse.of(response);
     }
 
     @Override
+    @Transactional
     public CommentResponse addReply(Long postId, Long commentId, CommentCreate reply) {
-        Comment parentComment = commentRepository.findById(commentId).orElseThrow(CommentException::notFound);
-        Comment childComment = reply.toEntity(parentComment);
-        Comment response = commentRepository.save(childComment);
+        Post post = postRepository.findById(postId).orElseThrow(PostException::notFound);
+        Comment parent = commentRepository.findById(commentId).orElseThrow(CommentException::notFound);
+        Comment child = Comment.builder()
+                .post(post)
+                .content(reply.getContent())
+                .password(reply.getPassword())
+                .author(reply.getAuthor())
+                .parent(parent)
+                .build();
+        Comment response = commentRepository.save(child);
         return CommentResponse.of(response);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<CommentResponse> getComments(Long postId) {
-        return Optional.ofNullable(commentRepository.findByPostId(postId))
+        postRepository.findById(postId).orElseThrow(PostException::notFound);
+        return Optional.of(commentRepository.findCommentsWithReplies(postId))
                 .filter(comments -> !comments.isEmpty()) // 리스트가 비어 있지 않은지 확인
                 .map(comments -> comments.stream()
-                        .filter(comment -> comment.getParent() == null)
-                        .map(CommentResponse::new)
+                        .map(CommentResponse::of)
                         .collect(Collectors.toList()))
                 .orElseThrow(CommentException::notFound);
     }
@@ -55,13 +71,16 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     public CommentResponse edit(Long postId, Long commentId, CommentEdit commentEdit) {
+        postRepository.findById(postId).orElseThrow(PostException::notFound);
         Comment comment = commentRepository.findById(commentId).orElseThrow(CommentException::notFound);
         comment.edit(commentEdit);
         return CommentResponse.of(comment);
     }
 
     @Override
+    @Transactional
     public CommentResponse delete(Long postId, Long commentId) {
+        postRepository.findById(postId).orElseThrow(PostException::notFound);
         Comment comment = commentRepository.findById(commentId).orElseThrow(CommentException::notFound);
         commentRepository.delete(comment);
         return CommentResponse.of(comment);
