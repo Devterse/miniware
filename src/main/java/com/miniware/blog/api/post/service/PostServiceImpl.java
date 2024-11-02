@@ -36,9 +36,10 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public PostResponse get(Long postId) {
         Post post = postRepository.findPostById(postId).orElseThrow(PostException::notFound);
+        post.incrementViewCount();  //조회수 증가
         return PostResponse.of(post);
     }
 

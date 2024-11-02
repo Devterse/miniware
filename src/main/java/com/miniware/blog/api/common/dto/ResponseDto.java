@@ -1,20 +1,26 @@
 package com.miniware.blog.api.common.dto;
 
+import com.miniware.blog.api.common.constant.CodeData;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import org.springframework.http.HttpStatus;
 
 
 @Getter
 @ToString
-@RequiredArgsConstructor
 public class ResponseDto {
 
-    private final Boolean result;
+    private final HttpStatus result;
     private final String code;
     private final String message;
 
-    public static ResponseDto of(Boolean result, String code, String message) {
-        return new ResponseDto(result, code, message);
+    public ResponseDto(CodeData codeData) {
+        this.result = codeData.getHttpStatus();
+        this.code = codeData.getCode();
+        this.message = codeData.getMessage();
+    }
+
+    public static ResponseDto of(CodeData codeData) {
+        return new ResponseDto(codeData);
     }
 }

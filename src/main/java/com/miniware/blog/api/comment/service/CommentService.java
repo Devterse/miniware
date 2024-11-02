@@ -8,11 +8,11 @@ import java.util.List;
 
 public interface CommentService {
 
+    List<CommentResponse> getComments(Long postId);
+
     CommentResponse addComment(Long postId, CommentCreate comment);
 
     CommentResponse addReply(Long postId, Long commentId, CommentCreate reply);
-
-    List<CommentResponse> getComments(Long postId);
 
     CommentResponse edit(Long postId, Long commentId, CommentEdit request);
 

@@ -27,6 +27,10 @@ public class Post extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     private String content;
 
+    private int likeCnt;
+    private int viewCnt;
+    private int commentCnt;
+
     @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id", nullable = false)
@@ -44,5 +48,34 @@ public class Post extends BaseEntity {
         this.title = postEdit.getTitle();
         this.content = postEdit.getContent();
         this.board = board;
+    }
+
+    //조회수 증가
+    public void incrementViewCount() {
+        this.viewCnt++;
+    }
+
+    //좋아요 증가
+    public void incrementLikeCount() {
+        this.likeCnt++;
+    }
+
+    //좋아요 감소
+    public void decrementLikeCount() {
+        if (this.likeCnt > 0) {
+            this.likeCnt--;
+        }
+    }
+
+    //댓글 수 증가
+    public void incrementCommentCount() {
+        this.commentCnt++;
+    }
+
+    //댓글수 감소
+    public void decrementCommentCount() {
+        if (this.commentCnt > 0) {
+            this.commentCnt--;
+        }
     }
 }

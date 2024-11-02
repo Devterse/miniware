@@ -2,6 +2,7 @@ package com.miniware.blog.api.post.controller;
 
 import com.miniware.blog.api.common.dto.DataResponseDto;
 import com.miniware.blog.api.common.dto.PagingDto;
+import com.miniware.blog.api.common.dto.ResponseDto;
 import com.miniware.blog.api.post.dto.request.PostCreate;
 import com.miniware.blog.api.post.dto.request.PostEdit;
 import com.miniware.blog.api.post.dto.request.PostSearch;
@@ -28,41 +29,38 @@ public class PostController {
     private final PostService postService;
 
     @GetMapping("/board/{boardId}")
-    public ResponseEntity<DataResponseDto<Page<PostResponse>>> getList(
-            @PathVariable Long boardId,
-            @ModelAttribute PostSearch searchDto,
-            PagingDto pagingDto) {
+    public ResponseEntity<DataResponseDto<Page<PostResponse>>> getList(@PathVariable Long boardId, @ModelAttribute PostSearch searchDto, PagingDto pagingDto) {
         Pageable pageRequest = PageRequest.of(pagingDto.getPage(), pagingDto.getSize());
         Page<PostResponse> list = postService.getList(boardId, searchDto, pageRequest);
-        DataResponseDto<Page<PostResponse>> result = DataResponseDto.of(list);
+        DataResponseDto<Page<PostResponse>> result = DataResponseDto.of(list, POST_RETRIEVED);
         return ResponseEntity.ok(result);
     }
 
     @GetMapping("/{postId}")
     public ResponseEntity<DataResponseDto<PostResponse>> get(@PathVariable Long postId) {
         PostResponse postResponse = postService.get(postId);
-        DataResponseDto<PostResponse> result = DataResponseDto.of(postResponse, OK);
+        DataResponseDto<PostResponse> result = DataResponseDto.of(postResponse, POST_RETRIEVED);
         return ResponseEntity.ok(result);
     }
 
     @PostMapping("/board/{boardId}")
-    public ResponseEntity<DataResponseDto<PostResponse>> save(@PathVariable Long boardId, @Valid @RequestBody PostCreate request) {
-        PostResponse postResponse = postService.save(boardId, request);
-        DataResponseDto<PostResponse> result = DataResponseDto.of(postResponse, POST_CREATED);
+    public ResponseEntity<ResponseDto> save(@PathVariable Long boardId, @Valid @RequestBody PostCreate postCreate) {
+        postService.save(boardId, postCreate);
+        ResponseDto result = ResponseDto.of(POST_CREATED);
         return ResponseEntity.ok(result);
     }
 
     @PutMapping("/{postId}")
-    public ResponseEntity<DataResponseDto<PostResponse>> update(@PathVariable Long postId, @Valid @RequestBody PostEdit postEdit) {
-        PostResponse postResponse = postService.edit(postId, postEdit);
-        DataResponseDto<PostResponse> result = DataResponseDto.of(postResponse, POST_UPDATED);
+    public ResponseEntity<ResponseDto> update(@PathVariable Long postId, @Valid @RequestBody PostEdit postEdit) {
+        postService.edit(postId, postEdit);
+        ResponseDto result = ResponseDto.of(POST_UPDATED);
         return ResponseEntity.ok(result);
     }
 
     @DeleteMapping("{postId}")
-    public ResponseEntity<DataResponseDto<PostResponse>> delete(@PathVariable Long postId) {
-        PostResponse postResponse = postService.delete(postId);
-        DataResponseDto<PostResponse> result = DataResponseDto.of(postResponse, POST_DELETED);
+    public ResponseEntity<ResponseDto> delete(@PathVariable Long postId) {
+        postService.delete(postId);
+        ResponseDto result = ResponseDto.of(POST_DELETED);
         return ResponseEntity.ok(result);
     }
 }

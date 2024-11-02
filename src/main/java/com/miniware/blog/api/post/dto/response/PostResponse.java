@@ -10,12 +10,19 @@ public class PostResponse {
     private final Long id;
     private final String title;
     private final String content;
+    private final int viewCnt;
+    private final int commentCnt;
+    private final int likeCnt;
+
     private final BoardResponse board;
 
     public PostResponse(Post post) {
         this.id = post.getId();
         this.title = post.getTitle();
         this.content = post.getContent();
+        this.viewCnt = post.getViewCnt();
+        this.commentCnt = post.getCommentCnt();
+        this.likeCnt = post.getLikeCnt();
         this.board = BoardResponse.of(post.getBoard());
     }
 

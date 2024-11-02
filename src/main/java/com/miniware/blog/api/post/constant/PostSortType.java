@@ -10,15 +10,15 @@ import static com.miniware.blog.api.post.entity.QPost.post;
 public enum PostSortType implements SearchType {
 
     RECENT("최근순", "createAt"),
-    GREAT("좋아요순",null),
-    COMMENT("댓글순",null),
-    HITS("조회순",null);
+    GREAT("좋아요순","likeCnt"),
+    COMMENT("댓글순","commentCnt"),
+    HITS("조회순","viewCnt");
 
     private final String desc;
     private final String field;
 
     @Override
-    public String getCode() {
+    public String getName() {
         return name();
     }
 

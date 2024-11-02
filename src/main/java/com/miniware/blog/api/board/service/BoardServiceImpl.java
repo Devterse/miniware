@@ -24,17 +24,20 @@ public class BoardServiceImpl implements BoardService {
     private final BoardRepository boardRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public List<BoardResponse> findAll() {
         return boardRepository.findAll().stream().map(BoardResponse::new).toList();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public BoardResponse get(Long boardId) {
         Board board = boardRepository.findById(boardId).orElseThrow(BoardException::notFound);
         return BoardResponse.of(board);
     }
 
     @Override
+    @Transactional
     public BoardResponse save(BoardCreate boardCreate) {
         if(boardRepository.existsByName(boardCreate.getName())) {
             throw BoardException.duplicate();
@@ -57,6 +60,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
+    @Transactional
     public BoardResponse delete(Long boardId) {
         Board board = boardRepository.findById(boardId).orElseThrow(BoardException::notFound);
         boardRepository.delete(board);

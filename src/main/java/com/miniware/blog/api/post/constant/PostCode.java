@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum PostCode implements CodeData {
 
+    POST_RETRIEVED("p000",HttpStatus.OK,"게시글이 성공적으로 조회되었습니다."),
     POST_CREATED("p001",HttpStatus.CREATED, "게시글이 등록되었습니다."),
     POST_CREATION_FAILED("p002",HttpStatus.BAD_REQUEST, "게시글 등록이 실패하였습니다."),
     POST_NOT_FOUND("p003", HttpStatus.NOT_FOUND, "등록된 게시글이 없습니다."),

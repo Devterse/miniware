@@ -5,10 +5,11 @@ import com.miniware.blog.api.board.dto.request.BoardEdit;
 import com.miniware.blog.api.board.dto.response.BoardResponse;
 import com.miniware.blog.api.board.service.BoardService;
 import com.miniware.blog.api.common.dto.DataResponseDto;
+import com.miniware.blog.api.common.dto.ResponseDto;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,38 +27,38 @@ public class BoardController {
     @GetMapping
     public ResponseEntity<DataResponseDto<List<BoardResponse>>> getList() {
         List<BoardResponse> list = boardService.findAll();
-        return ResponseEntity.ok(DataResponseDto.of(list));
+        return ResponseEntity.ok(DataResponseDto.of(list, BOARD_RETRIEVED));
     }
 
     /*게시판 조회*/
     @GetMapping("/{boardId}")
     public ResponseEntity<DataResponseDto<BoardResponse>> get(@PathVariable Long boardId) {
         BoardResponse boardResponse = boardService.get(boardId);
-        DataResponseDto<BoardResponse> result = DataResponseDto.of(boardResponse);
+        DataResponseDto<BoardResponse> result = DataResponseDto.of(boardResponse, BOARD_RETRIEVED);
         return ResponseEntity.ok(result);
     }
 
     /*게시판 등록*/
     @PostMapping
-    public ResponseEntity<DataResponseDto<BoardResponse>> save(@RequestBody BoardCreate boardCreate) {
-        BoardResponse boardResponse = boardService.save(boardCreate);
-        DataResponseDto<BoardResponse> result = DataResponseDto.of(boardResponse, BOARD_CREATED);
+    public ResponseEntity<ResponseDto> save(@Valid @RequestBody BoardCreate boardCreate) {
+        boardService.save(boardCreate);
+        ResponseDto result = ResponseDto.of(BOARD_CREATED);
         return ResponseEntity.ok(result);
     }
 
     //게시판 수정
     @PutMapping("/{boardId}")
-    public ResponseEntity<DataResponseDto<BoardResponse>> update(@PathVariable Long boardId, @RequestBody BoardEdit boardEdit) {
-        BoardResponse edit = boardService.edit(boardId, boardEdit);
-        DataResponseDto<BoardResponse> result = DataResponseDto.of(edit, BOARD_UPDATED);
+    public ResponseEntity<ResponseDto> update(@PathVariable Long boardId, @Valid @RequestBody BoardEdit boardEdit) {
+        boardService.edit(boardId, boardEdit);
+        ResponseDto result = ResponseDto.of(BOARD_UPDATED);
         return ResponseEntity.ok(result);
     }
 
     //게시판 삭제
     @DeleteMapping("/{boardId}")
-    public ResponseEntity<DataResponseDto<BoardResponse>> delete(@PathVariable Long boardId) {
-        BoardResponse delete = boardService.delete(boardId);
-        DataResponseDto<BoardResponse> result = DataResponseDto.of(delete, BOARD_DELETED);
+    public ResponseEntity<ResponseDto> delete(@PathVariable Long boardId) {
+        boardService.delete(boardId);
+        ResponseDto result = ResponseDto.of(BOARD_DELETED);
         return ResponseEntity.ok(result);
     }
 }

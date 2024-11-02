@@ -25,37 +25,7 @@ public class CommentServiceImpl implements CommentService {
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
 
-    @Override
-    @Transactional
-    public CommentResponse addComment(Long postId, CommentCreate commentCreate) {
-        Post post = postRepository.findById(postId).orElseThrow(PostException::notFound);
-        Comment comment = Comment.builder()
-                .post(post)
-                .content(commentCreate.getContent())
-                .password(commentCreate.getPassword())
-                .author(commentCreate.getAuthor())
-                .parent(null)
-                .build();
-        Comment response = commentRepository.save(comment);
-        return CommentResponse.of(response);
-    }
-
-    @Override
-    @Transactional
-    public CommentResponse addReply(Long postId, Long commentId, CommentCreate reply) {
-        Post post = postRepository.findById(postId).orElseThrow(PostException::notFound);
-        Comment parent = commentRepository.findById(commentId).orElseThrow(CommentException::notFound);
-        Comment child = Comment.builder()
-                .post(post)
-                .content(reply.getContent())
-                .password(reply.getPassword())
-                .author(reply.getAuthor())
-                .parent(parent)
-                .build();
-        Comment response = commentRepository.save(child);
-        return CommentResponse.of(response);
-    }
-
+    /*댓글 조회*/
     @Override
     @Transactional(readOnly = true)
     public List<CommentResponse> getComments(Long postId) {
@@ -68,6 +38,46 @@ public class CommentServiceImpl implements CommentService {
                 .orElseThrow(CommentException::notFound);
     }
 
+    /*댓글 등록*/
+    @Override
+    @Transactional
+    public CommentResponse addComment(Long postId, CommentCreate commentCreate) {
+        Post post = postRepository.findById(postId).orElseThrow(PostException::notFound);
+
+        post.incrementCommentCount();   //댓글 수 증가
+
+        Comment comment = Comment.builder()
+                .post(post)
+                .content(commentCreate.getContent())
+                .password(commentCreate.getPassword())
+                .author(commentCreate.getAuthor())
+                .parent(null)
+                .build();
+        Comment response = commentRepository.save(comment);
+        return CommentResponse.of(response);
+    }
+
+    /*대댓글 등록*/
+    @Override
+    @Transactional
+    public CommentResponse addReply(Long postId, Long commentId, CommentCreate reply) {
+        Post post = postRepository.findById(postId).orElseThrow(PostException::notFound);
+        Comment parent = commentRepository.findById(commentId).orElseThrow(CommentException::notFound);
+
+        post.incrementCommentCount();   //댓글 수 증가
+
+        Comment child = Comment.builder()
+                .post(post)
+                .content(reply.getContent())
+                .password(reply.getPassword())
+                .author(reply.getAuthor())
+                .parent(parent)
+                .build();
+        Comment response = commentRepository.save(child);
+        return CommentResponse.of(response);
+    }
+
+    /*댓글 수정*/
     @Override
     @Transactional
     public CommentResponse edit(Long postId, Long commentId, CommentEdit commentEdit) {
@@ -77,12 +87,14 @@ public class CommentServiceImpl implements CommentService {
         return CommentResponse.of(comment);
     }
 
+    /*댓글 삭제*/
     @Override
     @Transactional
     public CommentResponse delete(Long postId, Long commentId) {
-        postRepository.findById(postId).orElseThrow(PostException::notFound);
+        Post post = postRepository.findById(postId).orElseThrow(PostException::notFound);
         Comment comment = commentRepository.findById(commentId).orElseThrow(CommentException::notFound);
         commentRepository.delete(comment);
+        post.decrementCommentCount();
         return CommentResponse.of(comment);
     }
 }

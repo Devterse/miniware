@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum CommentCode implements CodeData {
 
+    COMMENT_RETRIEVED("c000",HttpStatus.OK,"댓글이 성공적으로 조회되었습니다."),
     COMMENT_CREATED("c001", HttpStatus.CREATED, "댓글이 등록되었습니다."),
     COMMENT_CREATION_FAILED("c002", HttpStatus.BAD_REQUEST, "댓글 등록이 실패하였습니다."),
     COMMENT_NOT_FOUND("c003", HttpStatus.NOT_FOUND, "등록된 댓글이 없습니다."),
