@@ -5,9 +5,14 @@ import com.miniware.blog.api.common.constant.ResponseCode;
 import com.miniware.blog.api.common.dto.ResponseDto;
 import com.miniware.blog.api.common.dto.ValidationResponseDto;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.BadRequestException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -58,6 +63,30 @@ public class GlobalExceptionHandler {
         log.error(ex.getMessage(), ex);
         ResponseDto response = ResponseDto.of(ResponseCode.NULL_POINTER_ERROR);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+    }
+
+    //인증 실패시
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ResponseDto> handleAuthenticationException(AuthenticationException ex) {
+        log.error(ex.getMessage(), ex);
+        ResponseDto response = ResponseDto.of(ResponseCode.UNAUTHORIZED);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+    }
+
+    //password가 틀린경우
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ResponseDto> handleBadRequestException(BadRequestException ex) {
+        log.error(ex.getMessage(), ex);
+        ResponseDto response = ResponseDto.of(ResponseCode.BAD_REQUEST);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    //username이 존재하지 않는 경우
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<ResponseDto> handleUsernameNotFoundException(UsernameNotFoundException ex) {
+        log.error(ex.getMessage(), ex);
+        ResponseDto responseDto = ResponseDto.of(ResponseCode.BAD_REQUEST);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseDto);
     }
 
     // 예외 처리

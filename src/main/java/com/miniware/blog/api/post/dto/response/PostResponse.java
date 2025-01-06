@@ -13,7 +13,6 @@ public class PostResponse {
     private final int viewCnt;
     private final int commentCnt;
     private final int likeCnt;
-
     private final BoardResponse board;
 
     public PostResponse(Post post) {

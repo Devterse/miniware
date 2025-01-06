@@ -1,10 +1,7 @@
 package com.miniware.blog.api.post.constant;
 
 import com.miniware.blog.api.common.mapper.SearchType;
-import com.querydsl.core.types.OrderSpecifier;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import static com.miniware.blog.api.post.entity.QPost.post;
 
 @RequiredArgsConstructor
 public enum PostSortType implements SearchType {
