@@ -5,10 +5,12 @@ import lombok.Getter;
 
 @Getter
 public class RefreshRequest {
-    private String refreshToken;
+    private final Long userId;
+    private final String refreshToken;
 
     @Builder
-    public RefreshRequest(String refreshToken) {
+    public RefreshRequest(Long userId, String refreshToken) {
+        this.userId = userId;
         this.refreshToken = refreshToken;
     }
 }

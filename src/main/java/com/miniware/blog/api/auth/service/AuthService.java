@@ -1,8 +1,10 @@
 package com.miniware.blog.api.auth.service;
 
 import com.miniware.blog.api.auth.dto.request.AuthRequest;
+import com.miniware.blog.api.auth.dto.request.RefreshRequest;
 import com.miniware.blog.api.auth.dto.response.AuthResponse;
 import com.miniware.blog.api.auth.jwt.JwtUtil;
+import com.miniware.blog.api.auth.repository.RefreshTokenRepository;
 import com.miniware.blog.api.user.constants.Role;
 import com.miniware.blog.api.user.entity.User;
 import com.miniware.blog.api.user.exception.UserException;
@@ -32,6 +34,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final RefreshTokenService refreshTokenService;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     //회원가입
     @Transactional
@@ -47,12 +50,18 @@ public class AuthService {
         userRepository.save(user);
     }
 
-    //로그인
+    /**
+     * 로그인 처리
+     * @param request 사용자 이름, 사용자 비밀번호
+     * @return Access Token과 Refresh Token
+     */
     public AuthResponse login(AuthRequest request) {
         //사용자 인증
         Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+        CustomUserDetails userDetails = (CustomUserDetails) authenticate.getPrincipal();
+        long userId = userDetails.getUserId();
 
-        Collection<? extends GrantedAuthority> authorities = authenticate.getAuthorities();
+        Collection<? extends GrantedAuthority> authorities = userDetails.getAuthorities();
         Set<Role> roles = authorities.stream()
                 .map(grantedAuthority -> Role.valueOf(grantedAuthority.getAuthority()))
                 .collect(Collectors.toSet());
@@ -62,17 +71,21 @@ public class AuthService {
         //refresh token 생성
         String refreshToken = jwtUtil.createRefreshToken();
         //refresh token 저장
-        refreshTokenService.saveRefreshToken(request.getUsername(), refreshToken, jwtUtil.getRefreshExpiredMs());
-
+        refreshTokenRepository.save(userId, refreshToken, jwtUtil.getRefreshExpiredMs());
         return AuthResponse.of(accessToken, refreshToken);
     }
 
-    //
-    public AuthResponse refreshAccessToken(String refreshToken) {
-        if (refreshTokenService.validateRefreshToken(refreshToken)) {
-            String username = refreshTokenService.getUsernameByRefreshToken(refreshToken);
+    /**
+     * Access Token 갱신
+     * @param request 사용자 ID, refreshToken
+     * @return 새로운 Access Token
+     */
+    public AuthResponse refreshAccessToken(RefreshRequest request) {
+        if (refreshTokenRepository.validateRefreshToken(request.getUserId(), request.getRefreshToken())) {
+            String username = "";
+
             String newAccessToken = jwtUtil.createAccessToken(username, Collections.singleton(Role.USER));
-            return AuthResponse.of(newAccessToken, refreshToken);
+            return AuthResponse.of(newAccessToken, request.getRefreshToken());
         } else {
             throw new RuntimeException("Invalid refresh token");
         }

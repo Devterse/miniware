@@ -18,6 +18,10 @@ public class CustomUserDetails implements UserDetails {
         return new CustomUserDetails(user);
     }
 
+    public long getUserId() {
+        return user.getId();
+    }
+
     @Override
     public String getUsername() {
         return user.getUsername();

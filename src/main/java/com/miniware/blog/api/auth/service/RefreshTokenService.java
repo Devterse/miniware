@@ -1,7 +1,7 @@
 package com.miniware.blog.api.auth.service;
 
 import com.miniware.blog.api.auth.entity.RefreshToken;
-import com.miniware.blog.api.auth.repository.RefreshTokenRepository;
+import com.miniware.blog.api.auth.repository.RefreshTokenRepository2;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -13,7 +13,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class RefreshTokenService {
-    private final RefreshTokenRepository refreshTokenRepository;
+    private final RefreshTokenRepository2 refreshTokenRepository;
     private final StringRedisTemplate redisTemplate;
 
     //Refresh Token 저장
