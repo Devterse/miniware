@@ -1,40 +1,43 @@
 package com.miniware.blog.api.auth.service;
 
 import com.miniware.blog.api.user.entity.User;
-import lombok.RequiredArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
 public class CustomUserDetails implements UserDetails {
 
-    private final User user;
 
-    public static UserDetails of(User user) {
-        return new CustomUserDetails(user);
-    }
+    @Getter
+    private final Long userId;
+    private final String username;
+    private final String password;
+    private final Collection<? extends GrantedAuthority> authorities;
 
-    public long getUserId() {
-        return user.getId();
+    @Builder
+    public CustomUserDetails(Long userId, String username, String password, Collection<? extends GrantedAuthority> authorities) {
+        this.userId = userId;
+        this.username = username;
+        this.password = password;
+        this.authorities = authorities;
     }
 
     @Override
     public String getUsername() {
-        return user.getUsername();
+        return username;
     }
 
     @Override
     public String getPassword() {
-        return user.getPassword();
+        return password;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return user.getRoles().stream().map(role -> new SimpleGrantedAuthority(role.name())).collect(Collectors.toSet());
+        return authorities;
     }
 
     @Override

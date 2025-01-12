@@ -44,8 +44,9 @@ public class AuthController {
 
     //Refresh Token을 사용해 Access Token 갱신
     @PostMapping("/refresh")
-    public ResponseEntity<AuthResponse> refreshToken(@RequestBody RefreshRequest request) {
-        AuthResponse result = authService.refreshAccessToken(request);
+    public ResponseEntity<DataResponseDto<AuthResponse>> refreshToken(@RequestBody RefreshRequest request) {
+        AuthResponse authResponse = authService.refreshAccessToken(request);
+        DataResponseDto<AuthResponse> result = DataResponseDto.of(authResponse, null);
         return ResponseEntity.ok(result);
     }
 

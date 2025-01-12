@@ -67,7 +67,7 @@ public class SecurityConfig {
         http.sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         //경로별 인가 작업
         http.authorizeHttpRequests((auth) -> auth
-                .requestMatchers("/api/v1/auth/login", "/","/api/v1/boards/**", "/api/v1/auth/join", "/api/v1/auth/refresh-token").permitAll()
+                .requestMatchers("/api/v1/auth/login", "/","/api/v1/boards/**", "/api/v1/auth/join", "/api/v1/auth/refresh").permitAll()
                 .requestMatchers("/admin").hasRole(Role.ADMIN.name())
                 .anyRequest().authenticated()
         );

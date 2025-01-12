@@ -9,6 +9,7 @@ import com.miniware.blog.api.user.constants.Role;
 import com.miniware.blog.api.user.entity.User;
 import com.miniware.blog.api.user.exception.UserException;
 import com.miniware.blog.api.user.repository.UserRepository;
+import com.miniware.blog.api.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -33,7 +34,6 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
-    private final RefreshTokenService refreshTokenService;
     private final RefreshTokenRepository refreshTokenRepository;
 
     //회원가입
@@ -59,7 +59,7 @@ public class AuthService {
         //사용자 인증
         Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
         CustomUserDetails userDetails = (CustomUserDetails) authenticate.getPrincipal();
-        long userId = userDetails.getUserId();
+        Long userId = userDetails.getUserId();
 
         Collection<? extends GrantedAuthority> authorities = userDetails.getAuthorities();
         Set<Role> roles = authorities.stream()
@@ -67,7 +67,7 @@ public class AuthService {
                 .collect(Collectors.toSet());
 
         //access token 생성
-        String accessToken = jwtUtil.createAccessToken(request.getUsername(), roles);
+        String accessToken = jwtUtil.createAccessToken(userId, request.getUsername(), roles);
         //refresh token 생성
         String refreshToken = jwtUtil.createRefreshToken();
         //refresh token 저장
@@ -81,13 +81,18 @@ public class AuthService {
      * @return 새로운 Access Token
      */
     public AuthResponse refreshAccessToken(RefreshRequest request) {
-        if (refreshTokenRepository.validateRefreshToken(request.getUserId(), request.getRefreshToken())) {
-            String username = "";
+        String refreshToken = request.getRefreshToken();
 
-            String newAccessToken = jwtUtil.createAccessToken(username, Collections.singleton(Role.USER));
-            return AuthResponse.of(newAccessToken, request.getRefreshToken());
-        } else {
-            throw new RuntimeException("Invalid refresh token");
+        //redist에서 refreshToken으로 userId조회
+        Long userId = refreshTokenRepository.getUserIdFromRefreshToken(refreshToken);
+        if (userId == null) {
+            throw UserException.notFound();
         }
+        //사용자 정보 조회
+        User user = userRepository.findById(userId).orElseThrow(UserException::notFound);
+
+        //새로운 accessToken 생성
+        String accessToken = jwtUtil.createAccessToken(userId, user.getUsername(), user.getRoles());
+        return AuthResponse.of(accessToken, refreshToken);
     }
 }

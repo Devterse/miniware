@@ -17,6 +17,13 @@ public class JwtUtil {
 
     private final JwtConfig jwtConfig;
 
+    public String createAccessToken(Long userId, String username, Set<Role> roles) {
+        return createToken(userId, username, roles, getAccessExpiredMs());
+    }
+    public String createRefreshToken() {
+        return UUID.randomUUID().toString(); // UUID로 생성
+    }
+
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
@@ -25,23 +32,12 @@ public class JwtUtil {
         return extractClaim(token, Claims::getExpiration);
     }
 
-    public String createAccessToken(String username, Set<Role> roles) {
-        return createToken(username, roles, getAccessExpiredMs());
-    }
-    public String createRefreshToken() {
-        return UUID.randomUUID().toString(); // UUID로 생성
-    }
-
     public long getAccessExpiredMs() {
         return jwtConfig.getAccessExpiredMs();
     }
 
     public long getRefreshExpiredMs() {
         return jwtConfig.getRefreshExpiredMs();
-    }
-
-    public String createRefreshToken(String username) {
-        return createToken(username, Set.of(), getRefreshExpiredMs());
     }
 
     public Set<Role> extractRoles(String token) {
@@ -63,13 +59,15 @@ public class JwtUtil {
     }
 
     //JWT 토큰 생성 메서드
-    public String createToken(String username, Set<Role> roles, Long expiredMs) {
+    public String createToken(Long userId, String username, Set<Role> roles, Long expiredMs) {
+
         Map<String, Object> claims = new HashMap<>();
         claims.put("roles", roles.stream().map(Role::name).collect(Collectors.toSet()));
+        claims.put("username", username);
 
         Instant now = Instant.now();
         return Jwts.builder()
-                .subject(username)
+                .subject(String.valueOf(userId))
                 .claims(claims)
                 .issuedAt(Date.from(now)) //발급 시간 설정
                 .expiration(Date.from(now.plusMillis(expiredMs)))  //만료 시간 설정
