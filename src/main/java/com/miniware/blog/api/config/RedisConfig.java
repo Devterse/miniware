@@ -1,4 +1,4 @@
-package com.miniware.blog.api.config.redis;
+package com.miniware.blog.api.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -5,7 +5,6 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-
 import java.time.Instant;
 import java.util.*;
 import java.util.function.Function;
@@ -63,11 +62,11 @@ public class JwtUtil {
 
         Map<String, Object> claims = new HashMap<>();
         claims.put("roles", roles.stream().map(Role::name).collect(Collectors.toSet()));
-        claims.put("username", username);
+        claims.put("userId", userId);
 
         Instant now = Instant.now();
         return Jwts.builder()
-                .subject(String.valueOf(userId))
+                .subject(username)
                 .claims(claims)
                 .issuedAt(Date.from(now)) //발급 시간 설정
                 .expiration(Date.from(now.plusMillis(expiredMs)))  //만료 시간 설정

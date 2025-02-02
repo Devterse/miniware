@@ -14,22 +14,31 @@ public class RefreshTokenRepository {
     private final StringRedisTemplate redisTemplate;
 
     //Refresh Token 저장
-    public void save(Long userId, String refreshToken, long ttl) {
-        String key = PREFIX_REFRESH_TOKEN + refreshToken; // "refresh:{userId}" 형태의 키
-        redisTemplate.opsForValue().set(key, String.valueOf(userId), ttl, TimeUnit.SECONDS); // TTL 설정
+    public void saveRefreshToken(Long userId, String refreshToken, long ttl) {
+        String key = PREFIX_REFRESH_TOKEN + userId; //"refresh:{userId}" 형태의 키
+        redisTemplate.opsForValue().set(key, refreshToken, ttl, TimeUnit.SECONDS); // TTL 설정
     }
 
-    // Refresh Token으로 userId 조회
+    //Refresh Token 조회
+    public String getRefreshToken(Long userId) {
+        String key = PREFIX_REFRESH_TOKEN + userId;
+        return redisTemplate.opsForValue().get(key);
+    }
+
+    //Refresh Token 삭제
+    public void deleteRefreshToken(Long userId) {
+        String key = PREFIX_REFRESH_TOKEN + userId;
+        redisTemplate.delete(key);
+    }
+
+    public boolean validateRefreshToken(Long userId, String providedToken) {
+        String storedToken = getRefreshToken(userId);
+        return storedToken != null && storedToken.equals(providedToken);
+    }
+
     public Long getUserIdFromRefreshToken(String refreshToken) {
         String key = PREFIX_REFRESH_TOKEN + refreshToken;
         return Long.parseLong(Objects.requireNonNull(redisTemplate.opsForValue().get(key)));
     }
-
-    //Refresh Token 삭제
-    public void delete(long refreshToken) {
-        String key = PREFIX_REFRESH_TOKEN + refreshToken;
-        redisTemplate.delete(key);
-    }
-
 
 }

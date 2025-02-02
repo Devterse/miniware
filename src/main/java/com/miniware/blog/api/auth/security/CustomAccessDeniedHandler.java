@@ -1,4 +1,4 @@
-package com.miniware.blog.api.config.security;
+package com.miniware.blog.api.auth.security;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

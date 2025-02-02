@@ -1,6 +1,5 @@
-package com.miniware.blog.api.auth.service;
+package com.miniware.blog.api.auth.model;
 
-import com.miniware.blog.api.user.entity.User;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
@@ -10,17 +9,19 @@ import java.util.Collection;
 
 public class CustomUserDetails implements UserDetails {
 
-
     @Getter
     private final Long userId;
     private final String username;
+    @Getter
+    private final String email;
     private final String password;
     private final Collection<? extends GrantedAuthority> authorities;
 
     @Builder
-    public CustomUserDetails(Long userId, String username, String password, Collection<? extends GrantedAuthority> authorities) {
+    public CustomUserDetails(Long userId, String username, String email, String password, Collection<? extends GrantedAuthority> authorities) {
         this.userId = userId;
         this.username = username;
+        this.email = email;
         this.password = password;
         this.authorities = authorities;
     }

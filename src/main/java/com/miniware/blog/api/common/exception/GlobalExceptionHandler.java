@@ -1,5 +1,7 @@
 package com.miniware.blog.api.common.exception;
 
+import com.miniware.blog.api.auth.constants.AuthCode;
+import com.miniware.blog.api.auth.exception.AuthException;
 import com.miniware.blog.api.common.constant.CodeData;
 import com.miniware.blog.api.common.constant.ResponseCode;
 import com.miniware.blog.api.common.dto.ResponseDto;
@@ -19,6 +21,11 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.miniware.blog.api.auth.constants.AuthCode.*;
 
 @Slf4j
 @RestControllerAdvice
@@ -65,28 +72,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
 
-    //인증 실패시
-    @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<ResponseDto> handleAuthenticationException(AuthenticationException ex) {
-        log.error(ex.getMessage(), ex);
-        ResponseDto response = ResponseDto.of(ResponseCode.UNAUTHORIZED);
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
-    }
-
     //password가 틀린경우
     @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<ResponseDto> handleBadRequestException(BadRequestException ex) {
+    public ResponseEntity<ResponseDto> handleBadRequestException(BadCredentialsException ex) {
         log.error(ex.getMessage(), ex);
-        ResponseDto response = ResponseDto.of(ResponseCode.BAD_REQUEST);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-    }
-
-    //username이 존재하지 않는 경우
-    @ExceptionHandler(UsernameNotFoundException.class)
-    public ResponseEntity<ResponseDto> handleUsernameNotFoundException(UsernameNotFoundException ex) {
-        log.error(ex.getMessage(), ex);
-        ResponseDto responseDto = ResponseDto.of(ResponseCode.BAD_REQUEST);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseDto);
+        ResponseDto response = ResponseDto.of(LOGIN_FAILURE);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
 
     // 예외 처리
@@ -96,5 +87,21 @@ public class GlobalExceptionHandler {
         ResponseDto response = ResponseDto.of(ResponseCode.BAD_REQUEST);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
+
+    //인증 실패시
+    /*@ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ResponseDto> handleAuthenticationException(AuthenticationException ex) {
+        log.error(ex.getMessage(), ex);
+        ResponseDto response = ResponseDto.of(ResponseCode.UNAUTHORIZED);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+    }*/
+
+    //username이 존재하지 않는 경우
+    /*@ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<ResponseDto> handleUsernameNotFoundException(UsernameNotFoundException ex) {
+        log.error(ex.getMessage(), ex);
+        ResponseDto responseDto = ResponseDto.of(ResponseCode.BAD_REQUEST);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseDto);
+    }*/
 
 }

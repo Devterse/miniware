@@ -1,5 +1,6 @@
 package com.miniware.blog.api.auth.service;
 
+import com.miniware.blog.api.auth.model.CustomUserDetails;
 import com.miniware.blog.api.user.entity.User;
 import com.miniware.blog.api.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         return CustomUserDetails.builder()
                 .userId(user.getId())
                 .username(user.getUsername())
+                .email(user.getEmail())
                 .password(user.getPassword())
                 .authorities(user.getRoles().stream().map(role -> new SimpleGrantedAuthority(role.name())).collect(Collectors.toSet()))
         .build();
