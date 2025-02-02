@@ -3,25 +3,22 @@ package com.miniware.blog.api.auth.service;
 import com.miniware.blog.api.auth.dto.request.AuthRequest;
 import com.miniware.blog.api.auth.dto.request.RefreshRequest;
 import com.miniware.blog.api.auth.dto.response.AuthResponse;
+import com.miniware.blog.api.auth.exception.AuthException;
 import com.miniware.blog.api.auth.jwt.JwtUtil;
+import com.miniware.blog.api.auth.model.CustomUserDetails;
 import com.miniware.blog.api.auth.repository.RefreshTokenRepository;
 import com.miniware.blog.api.user.constants.Role;
 import com.miniware.blog.api.user.entity.User;
 import com.miniware.blog.api.user.exception.UserException;
 import com.miniware.blog.api.user.repository.UserRepository;
-import com.miniware.blog.api.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -32,23 +29,8 @@ public class AuthService {
 
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final RefreshTokenRepository refreshTokenRepository;
-
-    //회원가입
-    @Transactional
-    public void join(AuthRequest request) {
-        if (userRepository.existsByUsername(request.getUsername())) {
-            throw UserException.duplicate();
-        }
-        User user = User.builder()
-                .username(request.getUsername())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .roles(Collections.singleton(Role.USER))
-                .build();
-        userRepository.save(user);
-    }
 
     /**
      * 로그인 처리
@@ -71,28 +53,35 @@ public class AuthService {
         //refresh token 생성
         String refreshToken = jwtUtil.createRefreshToken();
         //refresh token 저장
-        refreshTokenRepository.save(userId, refreshToken, jwtUtil.getRefreshExpiredMs());
+        refreshTokenRepository.saveRefreshToken(userId, refreshToken, jwtUtil.getRefreshExpiredMs());
         return AuthResponse.of(accessToken, refreshToken);
     }
 
     /**
      * Access Token 갱신
      * @param request 사용자 ID, refreshToken
-     * @return 새로운 Access Token
+     * @return  새로운 Access Token
      */
     public AuthResponse refreshAccessToken(RefreshRequest request) {
         String refreshToken = request.getRefreshToken();
+        Long userId = request.getUserId();
 
-        //redist에서 refreshToken으로 userId조회
-        Long userId = refreshTokenRepository.getUserIdFromRefreshToken(refreshToken);
-        if (userId == null) {
-            throw UserException.notFound();
+        // Refresh Token 검증
+        if(!refreshTokenRepository.validateRefreshToken(userId, refreshToken)) {
+            throw AuthException.refreshTokenInvalid();
         }
+
         //사용자 정보 조회
         User user = userRepository.findById(userId).orElseThrow(UserException::notFound);
 
         //새로운 accessToken 생성
-        String accessToken = jwtUtil.createAccessToken(userId, user.getUsername(), user.getRoles());
-        return AuthResponse.of(accessToken, refreshToken);
+        String newAccessToken = jwtUtil.createAccessToken(userId, user.getUsername(), user.getRoles());
+        String newRefreshToken = jwtUtil.createRefreshToken();
+
+        return AuthResponse.of(newAccessToken, newRefreshToken);
+    }
+
+    public void logout(RefreshRequest request) {
+        refreshTokenRepository.deleteRefreshToken(request.getUserId());
     }
 }

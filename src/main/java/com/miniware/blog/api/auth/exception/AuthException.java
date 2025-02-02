@@ -3,6 +3,8 @@ package com.miniware.blog.api.auth.exception;
 import com.miniware.blog.api.common.constant.CodeData;
 import lombok.Getter;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.AuthenticationException;
+
 import static com.miniware.blog.api.auth.constants.AuthCode.*;
 
 @Getter
@@ -29,5 +31,9 @@ public class AuthException extends BadCredentialsException {
 
     public static AuthException credentialsExpired() {
         return new AuthException(CREDENTIALS_EXPIRED);
+    }
+
+    public static AuthException refreshTokenInvalid() {
+        return new AuthException(REFRESH_TOKEN_INVALID);
     }
 }
