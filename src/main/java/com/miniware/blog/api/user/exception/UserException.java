@@ -42,5 +42,8 @@ public class UserException extends CustomException {
     public static UserException duplicate() {
         return new UserException(USER_NAME_DUPLICATE);
     }
+    public static UserException passwordIncorrect() {
+        return new UserException(USER_PW_INCORRECT);
+    }
 
 }

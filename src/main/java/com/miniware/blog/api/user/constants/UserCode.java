@@ -15,7 +15,9 @@ public enum UserCode implements CodeData {
     USER_UPDATE_FAILED("u005", HttpStatus.BAD_REQUEST, "계정 수정에 실패하였습니다."),
     USER_DELETED("u006", HttpStatus.OK, "계정이 삭제되었습니다."),
     USER_DELETION_FAILED("u007", HttpStatus.BAD_REQUEST, "계정 삭제에 실패하였습니다."),
-    USER_NAME_DUPLICATE("u008", HttpStatus.CONFLICT, "중복된 계정 입니다.");
+    USER_NAME_DUPLICATE("u008", HttpStatus.CONFLICT, "중복된 계정 입니다."),
+    USER_PW_INCORRECT("u009", HttpStatus.BAD_REQUEST, "현재 비밀번호가 올바르지 않습니다."),
+    USER_PW_UPDATED("u010",HttpStatus.OK,"비빌먼호를 변경하였습니다.");
 
     private final String code;
     private final HttpStatus httpStatus;
