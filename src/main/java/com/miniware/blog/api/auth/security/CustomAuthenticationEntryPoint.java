@@ -25,7 +25,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException ex) throws IOException {
         log.error(ex.getMessage(), ex);
-        ResponseDto responseDto = ResponseDto.of(TOKEN_INVALID);
+        ResponseDto<Void> responseDto = ResponseDto.of(TOKEN_INVALID);
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("application/json;charset=UTF-8");
         response.getWriter().write(objectMapper.writeValueAsString(responseDto));

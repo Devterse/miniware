@@ -1,6 +1,7 @@
 package com.miniware.blog.api.auth.exception;
 
 import com.miniware.blog.api.common.constant.CodeData;
+import com.miniware.blog.api.common.exception.CustomException;
 import lombok.Getter;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
@@ -8,13 +9,10 @@ import org.springframework.security.core.AuthenticationException;
 import static com.miniware.blog.api.auth.constants.AuthCode.*;
 
 @Getter
-public class AuthException extends BadCredentialsException {
-
-    private final CodeData codeData;
+public class AuthException extends CustomException {
 
     public AuthException(CodeData codeData) {
-        super(codeData.getMessage());
-        this.codeData = codeData;
+        super(codeData);
     }
 
     public static AuthException invalidUsernameOrPassword() {
@@ -35,5 +33,13 @@ public class AuthException extends BadCredentialsException {
 
     public static AuthException refreshTokenInvalid() {
         return new AuthException(REFRESH_TOKEN_INVALID);
+    }
+
+    public static AuthException tokenInvalid() {
+        return new AuthException(TOKEN_INVALID);
+    }
+
+    public static AuthException unauthorizedAccess() {
+        return new AuthException(UNAUTHORIZED_ACCESS);
     }
 }

@@ -1,5 +1,6 @@
 package com.miniware.blog.api.user.service;
 
+import com.miniware.blog.api.auth.exception.AuthException;
 import com.miniware.blog.api.auth.model.CustomUserDetails;
 import com.miniware.blog.api.user.constants.Role;
 import com.miniware.blog.api.user.dto.request.ChangePassword;
@@ -11,7 +12,6 @@ import com.miniware.blog.api.user.exception.UserException;
 import com.miniware.blog.api.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -97,6 +97,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse getCurrentUser(CustomUserDetails userDetails) {
+        if (userDetails == null) {
+            throw AuthException.unauthorizedAccess();
+        }
         User user = userRepository.findById(userDetails.getUserId()).orElseThrow(UserException::notFound);
         return UserResponse.of(user);
     }

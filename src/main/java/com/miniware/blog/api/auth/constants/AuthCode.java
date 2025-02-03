@@ -16,7 +16,8 @@ public enum AuthCode implements CodeData {
     CREDENTIALS_EXPIRED("a006", HttpStatus.UNAUTHORIZED, "자격 증명이 만료되었습니다."),
     REFRESH_TOKEN_INVALID("a007", HttpStatus.UNAUTHORIZED, "Refresh Token이 유효하지 않습니다."),
     ACCESS_TOKEN_SUCCESS("a008", HttpStatus.OK, "Access Token 갱신 완료되었습니다."),
-    TOKEN_INVALID("a009", HttpStatus.UNAUTHORIZED, "유효하지 않은 인증 정보입니다. 다시 로그인하세요.");
+    TOKEN_INVALID("a009", HttpStatus.UNAUTHORIZED, "유효하지 않은 인증 정보입니다. 다시 로그인하세요."),
+    UNAUTHORIZED_ACCESS("a012", HttpStatus.UNAUTHORIZED, "인증이 필요합니다.");
 
     private final String code;
     private final HttpStatus httpStatus;
