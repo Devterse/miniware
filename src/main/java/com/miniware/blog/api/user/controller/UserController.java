@@ -74,9 +74,9 @@ public class UserController {
 
     // 비밀번호 변경
     @PatchMapping("/{id}/password")
-    public ResponseEntity<ResponseDto> changePassword(@PathVariable Long id,@Valid @RequestBody ChangePassword request) {
+    public ResponseEntity<ResponseDto<Void>> changePassword(@PathVariable Long id,@Valid @RequestBody ChangePassword request) {
         userService.changePassword(id, request);
-        ResponseDto result = ResponseDto.of(USER_PW_UPDATED);
+        ResponseDto<Void> result = ResponseDto.of(USER_PW_UPDATED);
         return ResponseEntity.ok(result);
     }
 }

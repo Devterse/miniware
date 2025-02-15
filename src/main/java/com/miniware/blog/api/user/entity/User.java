@@ -1,5 +1,8 @@
 package com.miniware.blog.api.user.entity;
 
+import com.miniware.blog.api.comment.entity.Comment;
+import com.miniware.blog.api.common.entity.BaseEntity;
+import com.miniware.blog.api.post.entity.Post;
 import com.miniware.blog.api.user.constants.Role;
 import com.miniware.blog.api.user.dto.request.UserEdit;
 import jakarta.persistence.*;
@@ -8,14 +11,16 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "tb_user")
-public class User {
+public class User extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,6 +40,12 @@ public class User {
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)
     private Set<Role> roles = new HashSet<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Post> posts = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments = new ArrayList<>();
 
     @Builder
     public User(String username, String email, String password, Set<Role> roles) {

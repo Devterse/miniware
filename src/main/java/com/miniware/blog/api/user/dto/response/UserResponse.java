@@ -11,11 +11,13 @@ public class UserResponse {
 
     private final Long id;
     private final String username;
+    private final String email;
     private final Set<Role> roles;
 
     public UserResponse(User user) {
         this.id = user.getId();
         this.username = user.getUsername();
+        this.email = user.getEmail();
         this.roles = user.getRoles();
     }
 
