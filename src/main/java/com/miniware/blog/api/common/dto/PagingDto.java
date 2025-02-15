@@ -2,6 +2,9 @@ package com.miniware.blog.api.common.dto;
 
 import lombok.Builder;
 import lombok.Getter;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
 
 @Getter
 public class PagingDto {
@@ -15,7 +18,11 @@ public class PagingDto {
 
     @Builder
     public PagingDto(Integer page, Integer size) {
-        this.page = (page == null ? DEFAULT_PAGE : Math.max(1, page)) - 1;
-        this.size = size == null ? DEFAULT_SIZE : Math.min(size, MAX_SIZE);
+        this.page = (page == null || page < 1) ? DEFAULT_PAGE : page;
+        this.size = (size == null || size < 1) ? DEFAULT_SIZE : Math.min(size, MAX_SIZE);
+    }
+
+    public Pageable toPageable() {
+        return PageRequest.of(page - 1, size);
     }
 }
