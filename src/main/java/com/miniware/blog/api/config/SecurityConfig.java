@@ -58,6 +58,7 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)          //csrf disable
                 .formLogin(AbstractHttpConfigurer::disable) //form 로그인 방식 disable
                 .httpBasic(AbstractHttpConfigurer::disable) //http basic 인증 방식 disable
+                .anonymous(AbstractHttpConfigurer::disable) // 익명 사용자 기능 비활성화
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) //세션 비활성화
                 .authorizeHttpRequests(auth -> auth //경로별 인가 작업
                         .requestMatchers("/api/v1/auth/login", "/","/api/v1/boards/**", "/api/v1/auth/join", "/api/v1/auth/refresh","api/v1/posts/**",
