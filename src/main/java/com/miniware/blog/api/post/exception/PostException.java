@@ -36,4 +36,11 @@ public class PostException extends CustomException {
     public static PostException deletionFailed() {
         return new PostException(POST_DELETION_FAILED);
     }
+
+    public static PostException updateForbidden() {
+        return new PostException(POST_UPDATE_FORBIDDEN);
+    }
+    public static PostException deleteForbidden() {
+        return new PostException(POST_DELETE_FORBIDDEN);
+    }
 }

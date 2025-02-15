@@ -14,11 +14,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.miniware.blog.api.board.entity.QBoard.board;
 import static com.miniware.blog.api.post.entity.QPost.post;
+import static com.miniware.blog.api.user.entity.QUser.user;
 
 @RequiredArgsConstructor
 public class PostRepositoryImpl implements PostRepositoryCustom {
@@ -29,8 +29,10 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
     public Optional<Post> findPostById(Long id) {
         Post result = jpaQueryFactory.selectFrom(post)
                 .join(post.board, board).fetchJoin()
+                .join(post.user, user).fetchJoin()
                 .where(post.id.eq(id))
                 .fetchOne();
+
         return Optional.ofNullable(result);
     }
 
@@ -47,7 +49,12 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
             .orderBy(dynamicOrder(post, searchDto.getSortType().getField()))
             .fetch();
 
-        JPAQuery<Long> countQuery = jpaQueryFactory.select(post.count()).from(post);
+        JPAQuery<Long> countQuery = jpaQueryFactory
+                .select(post.count())
+                .from(post)
+                .where(
+                    post.board.id.eq(boardId).and(searchCondition(searchDto))
+                );
 
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
     }

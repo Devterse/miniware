@@ -4,6 +4,7 @@ import com.miniware.blog.api.board.entity.Board;
 import com.miniware.blog.api.comment.entity.Comment;
 import com.miniware.blog.api.common.entity.BaseEntity;
 import com.miniware.blog.api.post.dto.request.PostEdit;
+import com.miniware.blog.api.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,9 +23,10 @@ public class Post extends BaseEntity {
     @Column(name = "post_id")
     private Long id;
 
+    @Column(nullable = false)
     private String title;
-//    @Lob
-    @Column(columnDefinition = "TEXT")
+    //    @Lob
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
     private int likeCnt;
@@ -36,11 +38,16 @@ public class Post extends BaseEntity {
     @JoinColumn(name = "board_id", nullable = false)
     private Board board;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
     @Builder
-    public Post(String title, String content, Board board) {
+    public Post(String title, String content, Board board, User user) {
         this.title = title;
         this.content = content;
         this.board = board;
+        this.user = user;
     }
 
     //post 수정 메서드
@@ -77,5 +84,9 @@ public class Post extends BaseEntity {
         if (this.commentCnt > 0) {
             this.commentCnt--;
         }
+    }
+
+    public boolean isAuthor(Long userId) {
+        return this.user.getId().equals(userId);
     }
 }

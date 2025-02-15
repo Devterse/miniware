@@ -13,6 +13,6 @@ public interface PostService {
     PostResponse save(Long boardId, PostCreate postCreate);
     PostResponse get(Long postId);
     PostResponse edit(Long postId, PostEdit postEdit);
-    PostResponse delete(Long postId);
+    void delete(Long postId);
 
 }

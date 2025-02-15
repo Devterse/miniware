@@ -28,7 +28,7 @@ public class PostController {
 
     @GetMapping("/board/{boardId}")
     public ResponseEntity<ResponseDto<Page<PostResponse>>> getList(@PathVariable Long boardId, @ModelAttribute PostSearch searchDto, PagingDto pagingDto) {
-        Pageable pageRequest = PageRequest.of(pagingDto.getPage(), pagingDto.getSize());
+        Pageable pageRequest = pagingDto.toPageable();
         Page<PostResponse> list = postService.getList(boardId, searchDto, pageRequest);
         ResponseDto<Page<PostResponse>> result = ResponseDto.of(POST_RETRIEVED,list);
         return ResponseEntity.ok(result);
