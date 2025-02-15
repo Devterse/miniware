@@ -39,6 +39,10 @@ public class AuthException extends CustomException {
         return new AuthException(TOKEN_INVALID);
     }
 
+    public static AuthException tokenParseError() {
+        return new AuthException(TOKEN_PARSE_ERROR);
+    }
+
     public static AuthException unauthorizedAccess() {
         return new AuthException(UNAUTHORIZED_ACCESS);
     }

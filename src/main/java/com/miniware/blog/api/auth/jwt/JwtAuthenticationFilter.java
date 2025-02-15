@@ -1,5 +1,6 @@
 package com.miniware.blog.api.auth.jwt;
 
+import com.miniware.blog.api.auth.exception.AuthException;
 import com.miniware.blog.api.auth.service.CustomUserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -35,7 +36,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             try{
                 username = jwtUtil.extractUsername(jwtToken);
             }catch (Exception e) {
-                log.error(e.getMessage());
+                throw AuthException.tokenParseError();
             }
         }
 
