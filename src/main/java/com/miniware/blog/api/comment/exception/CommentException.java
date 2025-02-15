@@ -2,7 +2,11 @@ package com.miniware.blog.api.comment.exception;
 
 import com.miniware.blog.api.common.constant.CodeData;
 import com.miniware.blog.api.common.exception.CustomException;
+
 import static com.miniware.blog.api.comment.constants.CommentCode.*;
+import static com.miniware.blog.api.comment.constants.CommentCode.COMMENT_DELETE_FORBIDDEN;
+import static com.miniware.blog.api.post.constant.PostCode.POST_DELETE_FORBIDDEN;
+import static com.miniware.blog.api.post.constant.PostCode.POST_UPDATE_FORBIDDEN;
 
 public class CommentException extends CustomException {
     public CommentException(CodeData codeData) {
@@ -35,6 +39,14 @@ public class CommentException extends CustomException {
 
     public static CommentException deletionFailed() {
         return new CommentException(COMMENT_DELETION_FAILED);
+    }
+
+
+    public static CommentException updateForbidden() {
+        return new CommentException(COMMENT_UPDATE_FORBIDDEN);
+    }
+    public static CommentException deleteForbidden() {
+        return new CommentException(COMMENT_DELETE_FORBIDDEN);
     }
 
 }

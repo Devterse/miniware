@@ -1,6 +1,7 @@
 package com.miniware.blog.api.comment.dto.response;
 
 import com.miniware.blog.api.comment.entity.Comment;
+import com.miniware.blog.api.user.dto.response.UserResponse;
 import lombok.Getter;
 
 import java.util.List;
@@ -13,18 +14,14 @@ public class CommentResponse {
     private final Long postId;
     private final Long parentId;
     private final String content;
-    private final String author;
-    private final String password;
-    private final List<CommentResponse> replies;
+    private final UserResponse user;
 
     public CommentResponse(Comment comment) {
         this.id = comment.getId();
         this.postId = comment.getPost().getId();
-        this.parentId = comment.getParent() != null ? comment.getParent().getId() : null; // null 체크
+        this.parentId = (comment.getParent() != null) ? comment.getParent().getId() : null; // null 체크
         this.content = comment.getContent();
-        this.author = comment.getAuthor();
-        this.password = comment.getPassword();
-        this.replies = comment.getReplies().stream().map(CommentResponse::new).collect(Collectors.toList());
+        this.user = UserResponse.of(comment.getUser());
     }
 
     public static CommentResponse of(Comment comment) {

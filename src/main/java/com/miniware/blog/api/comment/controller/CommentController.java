@@ -4,18 +4,18 @@ import com.miniware.blog.api.comment.dto.request.CommentCreate;
 import com.miniware.blog.api.comment.dto.request.CommentEdit;
 import com.miniware.blog.api.comment.dto.response.CommentResponse;
 import com.miniware.blog.api.comment.service.CommentService;
+import com.miniware.blog.api.common.dto.PagingDto;
 import com.miniware.blog.api.common.dto.ResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 import static com.miniware.blog.api.comment.constants.CommentCode.*;
-import static com.miniware.blog.api.common.constant.ResponseCode.OK;
 
 @Slf4j
 @RestController
@@ -25,26 +25,28 @@ public class CommentController {
 
     private final CommentService commentService;
 
-    //댓글 목록
+    /*부모 댓글 조회*/
     @GetMapping
-    public ResponseEntity<ResponseDto<List<CommentResponse>>> getComments(@PathVariable Long postId) {
-        List<CommentResponse> comments = commentService.getComments(postId);
-        ResponseDto<List<CommentResponse>> result = ResponseDto.of(OK, comments);
+    public ResponseEntity<ResponseDto<Page<CommentResponse>>> getParentComments(@PathVariable Long postId, PagingDto pagingDto) {
+        Pageable pageable = pagingDto.toPageable();
+        Page<CommentResponse> parentComments = commentService.getParentComments(postId, pageable);
+        ResponseDto<Page<CommentResponse>> result = ResponseDto.of(COMMENT_RETRIEVED, parentComments);
+        return ResponseEntity.ok(result);
+    }
+
+    /*부모 댓글의 대댓글*/
+    @GetMapping("/{commentId}/replies")
+    public ResponseEntity<ResponseDto<Page<CommentResponse>>> getReplies(@PathVariable Long postId, @PathVariable Long commentId, PagingDto pagingDto) {
+        Pageable pageable = pagingDto.toPageable();
+        Page<CommentResponse> replies = commentService.getReplies(commentId, pageable);
+        ResponseDto<Page<CommentResponse>> result = ResponseDto.of(COMMENT_RETRIEVED, replies);
         return ResponseEntity.ok(result);
     }
 
     //댓글 등록
     @PostMapping
-    public ResponseEntity<ResponseDto<Void>> addComment(@PathVariable Long postId, @RequestBody @Valid CommentCreate comment) {
-        commentService.addComment(postId, comment);
-        ResponseDto<Void> result = ResponseDto.of(COMMENT_CREATED);
-        return ResponseEntity.status(HttpStatus.CREATED).body(result);
-    }
-
-    //대댓글 등록
-    @PostMapping("/{commentId}")
-    public ResponseEntity<ResponseDto<Void>> addReply(@PathVariable Long postId, @PathVariable Long commentId, @RequestBody @Valid CommentCreate reply) {
-        commentService.addReply(postId, commentId, reply);
+    public ResponseEntity<ResponseDto<Void>> addComment(@PathVariable Long postId, @RequestBody @Valid CommentCreate request) {
+        commentService.addComment(postId, request);
         ResponseDto<Void> result = ResponseDto.of(COMMENT_CREATED);
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }

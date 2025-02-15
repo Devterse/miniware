@@ -14,7 +14,10 @@ public enum CommentCode implements CodeData {
     COMMENT_UPDATED("c004", HttpStatus.OK, "댓글이 수정되었습니다."),
     COMMENT_UPDATE_FAILED("c005", HttpStatus.BAD_REQUEST, "댓글 수정에 실패하였습니다."),
     COMMENT_DELETED("c006", HttpStatus.OK, "댓글 삭제되었습니다."),
-    COMMENT_DELETION_FAILED("c007", HttpStatus.BAD_REQUEST, "댓글 삭제에 실패하였습니다.");
+    COMMENT_DELETION_FAILED("c007", HttpStatus.BAD_REQUEST, "댓글 삭제에 실패하였습니다."),
+    COMMENT_UPDATE_FORBIDDEN("p008", HttpStatus.FORBIDDEN, "댓글을 수정할 권한이 없습니다."),
+    COMMENT_DELETE_FORBIDDEN("p009", HttpStatus.FORBIDDEN, "댓글을 삭제할 권한이 없습니다.");;
+    ;
 
     private final String code;
     private final HttpStatus httpStatus;
