@@ -53,35 +53,39 @@ public class AuthService {
         //refresh token 생성
         String refreshToken = jwtUtil.createRefreshToken();
         //refresh token 저장
-        refreshTokenRepository.saveRefreshToken(userId, refreshToken, jwtUtil.getRefreshExpiredMs());
+        refreshTokenRepository.save(refreshToken, userId, jwtUtil.getRefreshExpiredMs());
         return AuthResponse.of(accessToken, refreshToken);
     }
 
     /**
      * Access Token 갱신
-     * @param request 사용자 ID, refreshToken
+     * @param request  refreshToken
      * @return  새로운 Access Token
      */
     public AuthResponse refreshAccessToken(RefreshRequest request) {
         String refreshToken = request.getRefreshToken();
-        Long userId = request.getUserId();
 
-        // Refresh Token 검증
-        if(!refreshTokenRepository.validateRefreshToken(userId, refreshToken)) {
-            throw AuthException.refreshTokenInvalid();
-        }
-
+        //refreshToken을 통해 userId조회
+        Long userId = refreshTokenRepository.findUserIdByToken(refreshToken).orElseThrow(AuthException::refreshTokenInvalid);
         //사용자 정보 조회
         User user = userRepository.findById(userId).orElseThrow(UserException::notFound);
-
         //새로운 accessToken 생성
         String newAccessToken = jwtUtil.createAccessToken(userId, user.getUsername(), user.getRoles());
+        //refresh token 생성
         String newRefreshToken = jwtUtil.createRefreshToken();
+        //refresh token 저장
+        refreshTokenRepository.save(newRefreshToken, userId, jwtUtil.getRefreshExpiredMs());
+        //이전 refreshToken 삭제
+        refreshTokenRepository.delete(refreshToken);
 
         return AuthResponse.of(newAccessToken, newRefreshToken);
     }
 
+    /**
+     * refresh Token 삭제
+     * @param request  refreshToken
+     */
     public void logout(RefreshRequest request) {
-        refreshTokenRepository.deleteRefreshToken(request.getUserId());
+        refreshTokenRepository.delete(request.getRefreshToken());
     }
 }

@@ -1,16 +1,15 @@
 package com.miniware.blog.api.auth.dto.request;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class RefreshRequest {
-    private final String refreshToken;
-    private final Long userId;
 
-    @Builder
-    public RefreshRequest(String refreshToken, Long userId) {
-        this.refreshToken = refreshToken;
-        this.userId = userId;
-    }
+    private String refreshToken;
+
 }

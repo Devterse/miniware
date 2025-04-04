@@ -5,6 +5,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 @Repository
@@ -14,31 +15,22 @@ public class RefreshTokenRepository {
     private final StringRedisTemplate redisTemplate;
 
     //Refresh Token 저장
-    public void saveRefreshToken(Long userId, String refreshToken, long ttl) {
-        String key = PREFIX_REFRESH_TOKEN + userId; //"refresh:{userId}" 형태의 키
-        redisTemplate.opsForValue().set(key, refreshToken, ttl, TimeUnit.SECONDS); // TTL 설정
+    public void save(String refreshToken, Long userId, long ttl) {
+        String key = PREFIX_REFRESH_TOKEN + refreshToken;   //"refresh:{refreshToken}" 형태의 키
+        redisTemplate.opsForValue().set(key, String.valueOf(userId), ttl, TimeUnit.SECONDS); // TTL 설정
     }
 
-    //Refresh Token 조회
-    public String getRefreshToken(Long userId) {
-        String key = PREFIX_REFRESH_TOKEN + userId;
-        return redisTemplate.opsForValue().get(key);
+    //userId 조회
+    public Optional<Long> findUserIdByToken(String refreshToken) {
+        String key = PREFIX_REFRESH_TOKEN + refreshToken;
+        String userId = redisTemplate.opsForValue().get(key);
+        return Optional.ofNullable(userId).map(Long::valueOf);
     }
 
     //Refresh Token 삭제
-    public void deleteRefreshToken(Long userId) {
-        String key = PREFIX_REFRESH_TOKEN + userId;
-        redisTemplate.delete(key);
-    }
-
-    public boolean validateRefreshToken(Long userId, String providedToken) {
-        String storedToken = getRefreshToken(userId);
-        return storedToken != null && storedToken.equals(providedToken);
-    }
-
-    public Long getUserIdFromRefreshToken(String refreshToken) {
+    public void delete(String refreshToken) {
         String key = PREFIX_REFRESH_TOKEN + refreshToken;
-        return Long.parseLong(Objects.requireNonNull(redisTemplate.opsForValue().get(key)));
+        redisTemplate.delete(key);
     }
 
 }

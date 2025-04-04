@@ -61,7 +61,7 @@ public class SecurityConfig {
                 .anonymous(AbstractHttpConfigurer::disable) // 익명 사용자 기능 비활성화
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) //세션 비활성화
                 .authorizeHttpRequests(auth -> auth //경로별 인가 작업
-                        .requestMatchers("/api/v1/auth/login", "/","/api/v1/boards/**", "/api/v1/auth/join", "/api/v1/auth/refresh","api/v1/posts/**",
+                        .requestMatchers("/api/v1/auth/login", "/","/api/v1/boards/**", "/api/v1/auth/join", "/api/v1/auth/refresh","api/v1/posts/**","api/news/**","/api/analysis/**","/ws-chat/**","/topic/**", "/app/**",
                                 "/api/v1/auth/logout","/api/v1/users/**").permitAll()
                         .requestMatchers("/admin").hasRole(Role.ADMIN.name())
                         .anyRequest().authenticated()
