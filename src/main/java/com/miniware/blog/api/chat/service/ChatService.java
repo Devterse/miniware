@@ -1,10 +1,10 @@
 package com.miniware.blog.api.chat.service;
 
-import com.miniware.blog.api.chat.dto.request.ChatMessageDto;
+import com.miniware.blog.api.chat.dto.request.ChatMessageRequest;
 
 public interface ChatService {
 
     Long createRoom(String name);
-    void sendMessage(ChatMessageDto message);
+    void sendMessage(ChatMessageRequest message);
 
 }

@@ -8,9 +8,8 @@ import java.util.List;
 
 @Getter
 @Entity
-@Table(name = "tb_chat_room")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
+@Table(name = "tb_chat_room")
 public class ChatRoom extends BaseEntity {
 
     @Id
@@ -21,7 +20,7 @@ public class ChatRoom extends BaseEntity {
     @Column(nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "chatRoom")
+    @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)
     private List<ChatMessage> messages;
 
     @Builder

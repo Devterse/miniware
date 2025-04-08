@@ -54,38 +54,53 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
-        http.csrf(AbstractHttpConfigurer::disable)          //csrf disable
-                .formLogin(AbstractHttpConfigurer::disable) //form 로그인 방식 disable
-                .httpBasic(AbstractHttpConfigurer::disable) //http basic 인증 방식 disable
-                .anonymous(AbstractHttpConfigurer::disable) // 익명 사용자 기능 비활성화
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) //세션 비활성화
-                .authorizeHttpRequests(auth -> auth //경로별 인가 작업
-                        .requestMatchers("/api/v1/auth/login", "/","/api/v1/boards/**", "/api/v1/auth/join", "/api/v1/auth/refresh","api/v1/posts/**","api/news/**","/api/analysis/**","/ws-chat/**","/topic/**", "/app/**",
-                                "/api/v1/auth/logout","/api/v1/users/**").permitAll()
-                        .requestMatchers("/admin").hasRole(Role.ADMIN.name())
-                        .anyRequest().authenticated()
-                )
-                .exceptionHandling(exceptions -> exceptions // 인증 및 인가 예외 처리
-                        .authenticationEntryPoint(customAuthenticationEntryPoint) // 인증 예외 처리 강제 설정
-                        .accessDeniedHandler(customAccessDeniedHandler)
-                )
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);// JWT 필터 적용
+        http
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .csrf(AbstractHttpConfigurer::disable)
+            .formLogin(AbstractHttpConfigurer::disable)
+            .httpBasic(AbstractHttpConfigurer::disable)
+            .anonymous(AbstractHttpConfigurer::disable)
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/api/v1/auth/**").permitAll()
+                .requestMatchers("/api/v1/boards/**", "/api/v1/posts/**", "/api/news/**", "/api/analysis/**").permitAll()
+                .requestMatchers("/ws-chat/**", "/topic/**", "/app/**").permitAll()
+                .requestMatchers("/api/v1/users/**").permitAll()
+                .requestMatchers("/admin").hasRole(Role.ADMIN.name())
+                .anyRequest().authenticated()
+            )
+            .exceptionHandling(exceptions -> exceptions
+                .authenticationEntryPoint(customAuthenticationEntryPoint)
+                .accessDeniedHandler(customAccessDeniedHandler)
+            )
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
+        
+        // 모든 도메인 허용
+        config.setAllowedOriginPatterns(List.of("*"));
+        
+        // 모든 메서드 허용
+        config.setAllowedMethods(List.of("*"));
 
-        config.setAllowedOrigins(List.of("http://localhost:8080")); // 여러 도메인을 허용할 경우 List.of() 사용 가능
-        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH")); // 허용할 HTTP 메서드 설정
-        config.setAllowCredentials(true); // 쿠키 인증 허용 여부 설정
-        config.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type")); // 허용할 헤더 설정
-        config.setMaxAge(3600L); // 1시간 동안 CORS 설정 캐시
-        config.setExposedHeaders(List.of("Authorization")); // 클라이언트에서 접근 가능한 헤더 설정
+        // 모든 헤더 허용
+        config.setAllowedHeaders(List.of("*"));
+        
+        // credentials 허용
+        config.setAllowCredentials(true);
+        
+        // CORS 설정 캐시 시간
+        config.setMaxAge(3600L);
+        
+        // 모든 헤더 노출
+        config.setExposedHeaders(List.of("*"));
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);    //모든 경로에 config 적용
+        source.registerCorsConfiguration("/**", config);
         return source;
     }
 }

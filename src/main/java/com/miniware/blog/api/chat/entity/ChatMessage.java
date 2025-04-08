@@ -1,5 +1,7 @@
 package com.miniware.blog.api.chat.entity;
 
+import com.miniware.blog.api.chat.constants.MessageStatus;
+import com.miniware.blog.api.chat.constants.MessageType;
 import com.miniware.blog.api.common.entity.BaseEntity;
 import com.miniware.blog.api.user.entity.User;
 import jakarta.persistence.*;
@@ -9,7 +11,6 @@ import lombok.*;
 @Entity
 @Table(name = "tb_chat_message")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 public class ChatMessage extends BaseEntity {
 
     @Id
@@ -25,13 +26,18 @@ public class ChatMessage extends BaseEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User sender;    //메시지 발송자
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String content; //메시지 내용
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private MessageType type;
+
     @Builder
-    public ChatMessage(ChatRoom chatRoom, User sender, String content) {
+    public ChatMessage(ChatRoom chatRoom, User sender, String content, MessageType type) {
         this.chatRoom = chatRoom;
         this.sender = sender;
         this.content = content;
+        this.type = type;
     }
 }

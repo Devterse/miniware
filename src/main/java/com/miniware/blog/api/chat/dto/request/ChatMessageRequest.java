@@ -4,14 +4,11 @@ import lombok.*;
 
 @Getter
 @Builder
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public class ChatMessageDto {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+public class ChatMessageRequest {
 
     private Long chatRoomId;
-    private  Long userId;
-    private  String sender;
     private  String content;
 
 }
