@@ -22,7 +22,14 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
 
         if (request instanceof ServletServerHttpRequest servletRequest) {
             HttpServletRequest httpRequest = servletRequest.getServletRequest();
+
+            // 1. Authorization 헤더 (모바일 앱용)
             String token = httpRequest.getHeader("Authorization");
+
+            // 2. 쿼리 파라미터 (웹 브라우저용)
+            if (token == null || token.isBlank()) {
+                token = httpRequest.getParameter("token");
+            }
 
             if (token != null && token.startsWith("Bearer ")) {
                 String username = jwtUtil.extractUsername(token.substring(7));

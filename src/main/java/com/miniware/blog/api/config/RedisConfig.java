@@ -1,14 +1,14 @@
 package com.miniware.blog.api.config;
 
-import com.miniware.blog.api.chat.redis.RedisSubscriber;
+import com.miniware.blog.api.chat.constants.ChatChannelType;
+import com.miniware.blog.api.chat.redis.ChatRedisSubscriber;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.listener.ChannelTopic;
+import org.springframework.data.redis.listener.PatternTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
-import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
@@ -32,22 +32,10 @@ public class RedisConfig {
     }
 
     @Bean
-    public ChannelTopic channelTopic() {
-        return new ChannelTopic("chatroom");
-    }
-
-    @Bean
-    public MessageListenerAdapter messageListenerAdapter(RedisSubscriber redisSubscriber) {
-        return new MessageListenerAdapter(redisSubscriber);
-    }
-
-    @Bean
-    public RedisMessageListenerContainer container(RedisConnectionFactory factory,
-                                                   MessageListenerAdapter adapter,
-                                                   ChannelTopic topic) {
+    public RedisMessageListenerContainer container(RedisConnectionFactory connectionFactory, ChatRedisSubscriber redisSubscriber) {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
-        container.setConnectionFactory(factory);
-        container.addMessageListener(adapter, topic);
+        container.setConnectionFactory(connectionFactory);
+        container.addMessageListener(redisSubscriber, new PatternTopic(ChatChannelType.ROOM.getChannelPattern()));
         return container;
     }
 }

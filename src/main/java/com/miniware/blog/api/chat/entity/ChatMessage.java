@@ -1,6 +1,5 @@
 package com.miniware.blog.api.chat.entity;
 
-import com.miniware.blog.api.chat.constants.MessageStatus;
 import com.miniware.blog.api.chat.constants.MessageType;
 import com.miniware.blog.api.common.entity.BaseEntity;
 import com.miniware.blog.api.user.entity.User;
@@ -15,15 +14,17 @@ public class ChatMessage extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "chat_message_id")
     private Long id;
+
+    @Column(nullable = false, unique = true)
+    private String messageUuid;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chat_room_id", nullable = false)
     private ChatRoom chatRoom;  //메시지가 속한 채팅방
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "sender_id", nullable = false)
     private User sender;    //메시지 발송자
 
     @Column(nullable = false, columnDefinition = "TEXT")
@@ -34,7 +35,8 @@ public class ChatMessage extends BaseEntity {
     private MessageType type;
 
     @Builder
-    public ChatMessage(ChatRoom chatRoom, User sender, String content, MessageType type) {
+    public ChatMessage(String messageUuid, ChatRoom chatRoom, User sender, String content, MessageType type) {
+        this.messageUuid = messageUuid;
         this.chatRoom = chatRoom;
         this.sender = sender;
         this.content = content;
