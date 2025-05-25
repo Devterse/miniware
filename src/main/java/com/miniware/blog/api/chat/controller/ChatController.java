@@ -45,7 +45,14 @@ public class ChatController {
      * @param message 전송할 메시지
      */
     @MessageMapping("/chat/message")
-    public void sendMessage(@Payload ChatMessageRequest message, Principal principal) {
-        chatService.sendMessage(message, principal);
+    public void sendMessage(@Payload ChatMessageRequest message, Message<?> msg) {
+        StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(msg, StompHeaderAccessor.class);
+        Authentication auth = (Authentication) accessor.getUser();
+        if (auth == null) {
+            auth = (Authentication) accessor.getSessionAttributes().get("AUTH");
+        }
+
+        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+        chatService.sendMessage(message, userDetails);
     }
 }

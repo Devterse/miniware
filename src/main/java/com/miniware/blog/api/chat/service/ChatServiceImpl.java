@@ -1,5 +1,6 @@
 package com.miniware.blog.api.chat.service;
 
+import com.miniware.blog.api.auth.model.CustomUserDetails;
 import com.miniware.blog.api.auth.security.SecurityUtil;
 import com.miniware.blog.api.chat.dto.request.ChatMessageRequest;
 import com.miniware.blog.api.chat.dto.response.ChatMessageResponse;
@@ -39,9 +40,10 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public void sendMessage(ChatMessageRequest request, Principal principal) {
+    public void sendMessage(ChatMessageRequest request, CustomUserDetails userDetails) {
+
         //1. 사용자 정보 가져오기
-        String username = principal.getName();
+        String username = userDetails.getUsername();
         User sender = userRepository.findByUsername(username).orElseThrow(UserException::notFound);
 
         //2. 채팅방 정보 가져오기
