@@ -15,12 +15,14 @@ import java.util.stream.Collectors;
 @ToString
 public class ResponseDto<T> {
 
+    private final boolean success;
     private final int status;
     private final String code;
     private final String message;
     private final T data;
 
     public ResponseDto(CodeData codeData, T data) {
+        this.success = codeData.getHttpStatus().is2xxSuccessful();
         this.status = codeData.getHttpStatus().value();
         this.code = codeData.getCode();
         this.message = codeData.getMessage();
