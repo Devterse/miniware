@@ -6,15 +6,14 @@ import lombok.Getter;
 @Getter
 public class AuthResponse {
     private final String accessToken;
-    private final String refreshToken;
 
     @Builder
-    public AuthResponse(String accessToken, String refreshToken) {
-        this.accessToken = accessToken;
-        this.refreshToken = refreshToken;
+    public AuthResponse(String accessToken) {
+        this.accessToken = accessToken;;
     }
 
-    public static AuthResponse of(String accessToken, String refreshToken) {
-        return new AuthResponse(accessToken, refreshToken);
+    public static AuthResponse of(String accessToken) {
+        return new AuthResponse(accessToken);
     }
+
 }
